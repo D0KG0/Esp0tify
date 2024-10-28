@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Subscripcion.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">EspotifyA</a> &gt; <a href="index.source.html" class="el_package">logica</a> &gt; <span class="el_source">Subscripcion.java</span></div><h1>Subscripcion.java</h1><pre class="source lang-java linenums">/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package logica;
+
+import datatypes.DataSub;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import java.io.Serializable;
+import java.time.LocalDate;
+
+/**
+ *
+ * @author frank
+ */
+@Entity
+public class Subscripcion implements Serializable {
+    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+    private int id;
+    private String tipo;    // Solo &quot;Semanal&quot;, &quot;Mensual&quot; o &quot;Anual&quot;
+    private String estado;  //  Solo “Pendiente”, &quot;Vigente&quot;, &quot;Vencida&quot; o ¨Cancelada¨
+    private LocalDate inicio;
+    private LocalDate fin; //calculada cuando se cambia el tipo
+    @OneToOne
+    private Cliente cli;
+    
+<span class="fc" id="L31">    public Subscripcion(){</span>
+<span class="fc" id="L32">        this.estado = &quot;Pendiente&quot;;</span>
+<span class="fc" id="L33">        this.inicio = LocalDate.now();</span>
+<span class="fc" id="L34">    }</span>
+    
+    
+
+    public String getTipo() {
+<span class="fc" id="L39">        return tipo;</span>
+    }
+
+    public void setTipo(String tipo) {
+<span class="fc" id="L43">        this.tipo = tipo;</span>
+<span class="pc bpc" id="L44" title="2 of 4 branches missed.">        switch (tipo){</span>
+<span class="nc" id="L45">            case &quot;Semanal&quot;: fin = inicio.plusWeeks(1);</span>
+<span class="nc" id="L46">                            break;</span>
+<span class="fc" id="L47">            case &quot;Mensual&quot;: fin = inicio.plusMonths(1);</span>
+<span class="fc" id="L48">                            break;</span>
+<span class="fc" id="L49">            case &quot;Anual&quot;: fin = inicio.plusYears(1);</span>
+                            break;
+        }
+<span class="fc" id="L52">    }</span>
+
+    public String getEstado() {
+<span class="fc" id="L55">        return estado;</span>
+    }
+
+    public void setEstado(String estado) {
+<span class="fc" id="L59">        this.estado = estado;</span>
+<span class="fc" id="L60">    }</span>
+
+    public LocalDate getInicio() {
+<span class="nc" id="L63">        return inicio;</span>
+    }
+
+    public void setInicio(LocalDate inicio) {
+<span class="nc" id="L67">        this.inicio = inicio;</span>
+<span class="nc" id="L68">    }</span>
+
+    public LocalDate getFin() {
+<span class="nc" id="L71">        return fin;</span>
+    }
+
+    public void setFin(LocalDate fin) {
+<span class="nc" id="L75">        this.fin = fin;</span>
+<span class="nc" id="L76">    }</span>
+
+    public void setId(int id) {
+<span class="nc" id="L79">        this.id = id;</span>
+<span class="nc" id="L80">    }</span>
+
+
+    public Cliente getCli() {
+<span class="nc" id="L84">        return cli;</span>
+    }
+
+    public void setCli(Cliente cli) {
+<span class="fc" id="L88">        this.cli = cli;</span>
+<span class="fc" id="L89">    }</span>
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

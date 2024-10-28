@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="testUnitarios.sistemaTest" time="3.297" tests="174" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="java.specification.version" value="22"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+    <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="java.class.path" value="C:\Users\miche\Documents\LaboratorioFin\Espotify\target\test-classes;C:\Users\miche\Documents\LaboratorioFin\Espotify\target\classes;C:\Users\miche\.m2\repository\org\netbeans\external\AbsoluteLayout\RELEASE220\AbsoluteLayout-RELEASE220.jar;C:\Users\miche\.m2\repository\com\mysql\mysql-connector-j\8.0.33\mysql-connector-j-8.0.33.jar;C:\Users\miche\.m2\repository\com\google\protobuf\protobuf-java\3.21.9\protobuf-java-3.21.9.jar;C:\Users\miche\.m2\repository\jakarta\persistence\jakarta.persistence-api\3.1.0\jakarta.persistence-api-3.1.0.jar;C:\Users\miche\.m2\repository\org\eclipse\persistence\eclipselink\4.0.2\eclipselink-4.0.2.jar;C:\Users\miche\.m2\repository\jakarta\xml\bind\jakarta.xml.bind-api\4.0.0\jakarta.xml.bind-api-4.0.0.jar;C:\Users\miche\.m2\repository\com\sun\xml\bind\jaxb-xjc\4.0.3\jaxb-xjc-4.0.3.jar;C:\Users\miche\.m2\repository\com\sun\xml\bind\jaxb-core\4.0.3\jaxb-core-4.0.3.jar;C:\Users\miche\.m2\repository\org\eclipse\angus\angus-activation\2.0.1\angus-activation-2.0.1.jar;C:\Users\miche\.m2\repository\jakarta\activation\jakarta.activation-api\2.1.2\jakarta.activation-api-2.1.2.jar;C:\Users\miche\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.7.0\junit-jupiter-api-5.7.0.jar;C:\Users\miche\.m2\repository\org\apiguardian\apiguardian-api\1.1.0\apiguardian-api-1.1.0.jar;C:\Users\miche\.m2\repository\org\opentest4j\opentest4j\1.2.0\opentest4j-1.2.0.jar;C:\Users\miche\.m2\repository\org\junit\platform\junit-platform-commons\1.7.0\junit-platform-commons-1.7.0.jar;C:\Users\miche\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.7.0\junit-jupiter-engine-5.7.0.jar;C:\Users\miche\.m2\repository\org\junit\platform\junit-platform-engine\1.7.0\junit-platform-engine-1.7.0.jar;C:\Users\miche\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.7.0\junit-jupiter-params-5.7.0.jar;C:\Users\miche\.m2\repository\org\mockito\mockito-core\4.0.0\mockito-core-4.0.0.jar;C:\Users\miche\.m2\repository\net\bytebuddy\byte-buddy\1.11.19\byte-buddy-1.11.19.jar;C:\Users\miche\.m2\repository\net\bytebuddy\byte-buddy-agent\1.11.19\byte-buddy-agent-1.11.19.jar;C:\Users\miche\.m2\repository\org\objenesis\objenesis\3.2\objenesis-3.2.jar;"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="user.variant" value=""/>
+    <property name="java.vendor.url" value="https://java.oracle.com/"/>
+    <property name="user.timezone" value="America/Montevideo"/>
+    <property name="os.name" value="Windows 10"/>
+    <property name="java.vm.specification.version" value="22"/>
+    <property name="user.country" value="UY"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.boot.library.path" value="D:\Cursos\Java\jdk-22.0.1\bin"/>
+    <property name="sun.java.command" value="C:\Users\miche\AppData\Local\Temp\surefire12940652097761586520\surefirebooter16626097381080631560.jar C:\Users\miche\AppData\Local\Temp\surefire12940652097761586520 2024-10-27T23-30-31_575-jvmRun1 surefire12424138152187996990tmp surefire_010494856383700718434tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="C:\Users\miche\Documents\LaboratorioFin\Espotify\target\test-classes;C:\Users\miche\Documents\LaboratorioFin\Espotify\target\classes;C:\Users\miche\.m2\repository\org\netbeans\external\AbsoluteLayout\RELEASE220\AbsoluteLayout-RELEASE220.jar;C:\Users\miche\.m2\repository\com\mysql\mysql-connector-j\8.0.33\mysql-connector-j-8.0.33.jar;C:\Users\miche\.m2\repository\com\google\protobuf\protobuf-java\3.21.9\protobuf-java-3.21.9.jar;C:\Users\miche\.m2\repository\jakarta\persistence\jakarta.persistence-api\3.1.0\jakarta.persistence-api-3.1.0.jar;C:\Users\miche\.m2\repository\org\eclipse\persistence\eclipselink\4.0.2\eclipselink-4.0.2.jar;C:\Users\miche\.m2\repository\jakarta\xml\bind\jakarta.xml.bind-api\4.0.0\jakarta.xml.bind-api-4.0.0.jar;C:\Users\miche\.m2\repository\com\sun\xml\bind\jaxb-xjc\4.0.3\jaxb-xjc-4.0.3.jar;C:\Users\miche\.m2\repository\com\sun\xml\bind\jaxb-core\4.0.3\jaxb-core-4.0.3.jar;C:\Users\miche\.m2\repository\org\eclipse\angus\angus-activation\2.0.1\angus-activation-2.0.1.jar;C:\Users\miche\.m2\repository\jakarta\activation\jakarta.activation-api\2.1.2\jakarta.activation-api-2.1.2.jar;C:\Users\miche\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.7.0\junit-jupiter-api-5.7.0.jar;C:\Users\miche\.m2\repository\org\apiguardian\apiguardian-api\1.1.0\apiguardian-api-1.1.0.jar;C:\Users\miche\.m2\repository\org\opentest4j\opentest4j\1.2.0\opentest4j-1.2.0.jar;C:\Users\miche\.m2\repository\org\junit\platform\junit-platform-commons\1.7.0\junit-platform-commons-1.7.0.jar;C:\Users\miche\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.7.0\junit-jupiter-engine-5.7.0.jar;C:\Users\miche\.m2\repository\org\junit\platform\junit-platform-engine\1.7.0\junit-platform-engine-1.7.0.jar;C:\Users\miche\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.7.0\junit-jupiter-params-5.7.0.jar;C:\Users\miche\.m2\repository\org\mockito\mockito-core\4.0.0\mockito-core-4.0.0.jar;C:\Users\miche\.m2\repository\net\bytebuddy\byte-buddy\1.11.19\byte-buddy-1.11.19.jar;C:\Users\miche\.m2\repository\net\bytebuddy\byte-buddy-agent\1.11.19\byte-buddy-agent-1.11.19.jar;C:\Users\miche\.m2\repository\org\objenesis\objenesis\3.2\objenesis-3.2.jar;"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="C:\Users\miche"/>
+    <property name="user.language" value="es"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2024-04-16"/>
+    <property name="java.home" value="D:\Cursos\Java\jdk-22.0.1"/>
+    <property name="file.separator" value="\"/>
+    <property name="basedir" value="C:\Users\miche\Documents\LaboratorioFin\Espotify"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="surefire.real.class.path" value="C:\Users\miche\AppData\Local\Temp\surefire12940652097761586520\surefirebooter16626097381080631560.jar"/>
+    <property name="user.script" value=""/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="22.0.1+8-16"/>
+    <property name="user.name" value="miche"/>
+    <property name="stdout.encoding" value="Cp1252"/>
+    <property name="path.separator" value=";"/>
+    <property name="os.version" value="10.0"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="maven.ext.class.path" value="D:\Program Files\NetBeans-21\netbeans\java\maven-nblib\netbeans-eventspy.jar"/>
+    <property name="localRepository" value="C:\Users\miche\.m2\repository"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="java.io.tmpdir" value="C:\Users\miche\AppData\Local\Temp\"/>
+    <property name="java.version" value="22.0.1"/>
+    <property name="user.dir" value="C:\Users\miche\Documents\LaboratorioFin\Espotify"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="native.encoding" value="Cp1252"/>
+    <property name="java.library.path" value="D:\Cursos\Java\jdk-22.0.1\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\msys64\ucrt64\bin;C:\MinGW\bin;C:\Program Files\Git\cmd;C:\Windows\System32\OpenSSH\;D:\Program Files\PuTTY\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\MySQL\MySQL Server 9.0\bin;C:\Program Files\apache-maven-3.9.9\bin;C:\MinGW\bin;C:\Users\miche\AppData\Local\Programs\Microsoft VS Code\bin;."/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="stderr.encoding" value="Cp1252"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="java.vm.version" value="22.0.1+8-16"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="66.0"/>
+  </properties>
+  <testcase name="testListar_Albumes_A_Seguir" classname="testUnitarios.sistemaTest" time="2.331"/>
+  <testcase name="testAltaPerfil_UsuarioYaRegistrado" classname="testUnitarios.sistemaTest" time="0.023"/>
+  <testcase name="testTraerListaParticularPorId_Existente" classname="testUnitarios.sistemaTest" time="0.006"/>
+  <testcase name="testListarListasDef" classname="testUnitarios.sistemaTest" time="0.003"/>
+  <testcase name="testListarListasPar" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testGetDataListasReproduccionAjax_Vacio" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testAltaPerfil_TipoUsuarioNoReconocido" classname="testUnitarios.sistemaTest" time="0.003"/>
+  <testcase name="testTipoLista_ListaNoExiste" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testObtenerCliente_ClienteNoExiste" classname="testUnitarios.sistemaTest" time="0.005"/>
+  <testcase name="testTraerTemasPorIdAlbum_AlbumConTemas" classname="testUnitarios.sistemaTest" time="0.05"/>
+  <testcase name="testGetDataUsuariosAjax_ReturnsClientes" classname="testUnitarios.sistemaTest" time="0.003"/>
+  <testcase name="testEncontrarListaPorDefecto_NoExistente" classname="testUnitarios.sistemaTest" time="0.042"/>
+  <testcase name="testGetClientes" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testAgregarTemaFavoritoCliente" classname="testUnitarios.sistemaTest" time="0.004"/>
+  <testcase name="testGetListasParticulares" classname="testUnitarios.sistemaTest" time="0.003"/>
+  <testcase name="testEliminarTemasListaPart" classname="testUnitarios.sistemaTest" time="0.315"/>
+  <testcase name="testAltaGenero" classname="testUnitarios.sistemaTest" time="0.003"/>
+  <testcase name="testEsPublicaLista_ListaPublica" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testTraerListasParticularesPublicas" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testAltaGenero_NuevoGenero" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testObtenerArtista_ArtistaNoExiste" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testTraerTemasFavoritosPorIdCliente" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testEliminarAlbumesFavoritosCliente" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testGetClientes_NoClientes" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testSeguirUsuario" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testTraerListaParticularPorClienteNombreIgual" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testListarGeneros" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testTraerListaDefGeneroNombre_NoCoincideNombre" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testEncontrarLista_CuandoLaListaNoExiste" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testGetAlbumEspecificoArt2" classname="testUnitarios.sistemaTest" time="0.066"/>
+  <testcase name="testGetAlbumEspecificoGen2" classname="testUnitarios.sistemaTest" time="0.005"/>
+  <testcase name="testUsuarioSeguidos_ClienteSigueUsuarioDesconocido" classname="testUnitarios.sistemaTest" time="0.031"/>
+  <testcase name="testGetGenerosEmpty" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testListar_Listas_A_Seguir_SinListas" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testGetPadre" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testGetTemas" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testDejarDeSeguirUsuario_NoSeguido" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testGetAlbumsByArtista_AlbumsExist" classname="testUnitarios.sistemaTest" time="0.003"/>
+  <testcase name="testAltaTema" classname="testUnitarios.sistemaTest" time="0.005"/>
+  <testcase name="testListar_Listas_A_Seguir_ListaParticularPrivada" classname="testUnitarios.sistemaTest" time="0.003"/>
+  <testcase name="testGetDataUsuariosAjax_ReturnsEmptyListForInvalidType" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testTraerAlbumesArtista_AlbumesExistentes" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testEncontrarListaPorDefecto_ListaVacia" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testAltaPerfil_ArtistaNuevo" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testGetListaDefecto" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testExisteUsuario_UsuarioNoExiste" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testSeguir_TEMA" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testTraerListasFavoritasPorIdCliente" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testDarLista_ListaParticular" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testAltaListaPart_CuandoLaListaNoExiste" classname="testUnitarios.sistemaTest" time="0.004"/>
+  <testcase name="testTraerTemasPorIdAlbum_AlbumSinTemas" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testEncontrarListaParticular_NombreClienteNoCoincide" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testEliminarTemasFavoritosCliente" classname="testUnitarios.sistemaTest" time="0.003"/>
+  <testcase name="testExisteMail_MailExiste" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testAltaAlbum" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testTraerListaPartClienteNombre_NoCoincideNombre" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testUsuarioSeguidos_ClienteSigueClientesYArtistas" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testUsuarioSeguidos_ClienteNoSigueNadie" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testGetSeguidores_ArtistaTieneSeguidores" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testNicknames_De_Clientes" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testGetAlbum_AlbumExists" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testTraerListasPublicasTodas" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testAltaListaDef_CuandoLaListaNoExiste" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testListar_Listas_A_Seguir_ListaParticularPublica_Favorita" classname="testUnitarios.sistemaTest" time="0.006"/>
+  <testcase name="testEncontrarLista_CuandoLaListaExiste" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testTraerListaPartClienteNombre_Existente" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testDarLista_ListaPorDefecto" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testEncontrarGenero_NoExiste" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testAddGeneroAlbum_GeneroNoCoincide" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testAgregarAlbumFavoritoCliente" classname="testUnitarios.sistemaTest" time="0.003"/>
+  <testcase name="testDarSubUsuario" classname="testUnitarios.sistemaTest" time="0.02"/>
+  <testcase name="testTraerListasDefectoPorGenero" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testEncontrarListaPorDefecto_Existente" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testListarListas" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testGetLista_Found" classname="testUnitarios.sistemaTest" time="0.017"/>
+  <testcase name="testAgregarListaFavoritaCliente" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testEncontrarListaParticular_Existente" classname="testUnitarios.sistemaTest" time="0.003"/>
+  <testcase name="testGetGeneros2SinGeneros" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testTraerTemasPorListasPorDefectoId" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testListar_Listas_A_Seguir" classname="testUnitarios.sistemaTest" time="0.006"/>
+  <testcase name="testAgregarTemaLista_CatchException" classname="testUnitarios.sistemaTest" time="0.017"/>
+  <testcase name="testObtenerUsuarioMail_UsuarioNoExiste" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testDejarDeSeguirUsuario" classname="testUnitarios.sistemaTest" time="0.003"/>
+  <testcase name="testTraerListasParticularesPorClientes_Existentes" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testTraerListasParticularesPorClientes_NoExistentes" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testObtenerCliente_ClienteExiste" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testGetAllAlbums" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testGetSeguidores_ArtistaNoExiste" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testObtenerArtista_ArtistaExiste" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testVerificaAlbum_Existe" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testListarListasPar_SinListasParticulares" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testTraerListaPorDefectoNombreNoIgual" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testGetDataUsuariosAjax_ReturnsArtistas" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testGetArtistas" classname="testUnitarios.sistemaTest" time="0"/>
+  <testcase name="testCambioEstadoSubscripcion" classname="testUnitarios.sistemaTest" time="0.005"/>
+  <testcase name="testTraerListaParticularPorId_NoExistente" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testEncontrarGenero_Existe" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testGetGeneros" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testGetTema_TemaDoesNotExist" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testListarListasDef_SinListas" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testAddGenero" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testTraerListasPorDefecto" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testExisteUsuario_UsuarioExiste" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testListar_Temas_A_Seguir_Cubre_Else" classname="testUnitarios.sistemaTest" time="0.003"/>
+  <testcase name="testListarListasPar_SinListas" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testGetArtistas_NoArtistas" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testAltaSubscripcion_ActualizarSubscripcionExistente" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testExisteTemaLista_TemaNoExiste" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testAddGeneroAlbum" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testGetTemasConAlbumSinTemas" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testTipoLista_ListaParticular" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testUsuarioSeguidos_ClienteSoloSigueArtistas" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testGetGeneros2ConGeneros" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testAddGeneroAlbumYaExistente" classname="testUnitarios.sistemaTest" time="0.003"/>
+  <testcase name="testListarUsuariosADejarDeSeguir" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testListar_Usuarios_A_Seguir" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testAgregarTemaLista" classname="testUnitarios.sistemaTest" time="0.006"/>
+  <testcase name="testGetDataAlbumsAjax" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testExisteTemaLista_TemaExiste" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testGetAlbum_AlbumDoesNotExist" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testGetDataListasReproduccionAjax_ListaParticular" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testGetAlbumEspecificoArt" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testGetAlbumEspecificoGen" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testGetSeguidores_ArtistaNoTieneSeguidores" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testTraerListaParticularPorClienteNombreNoIgual" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testExisteMail_MailNoExiste" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testVerificaAlbum_NoExiste" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testTraerAlbumes_ListaVacia" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testTraerListaPartClienteNombre_NoExistente" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testAltaSubscripcion_CrearNuevaSubscripcion" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testTraerListaDefGeneroNombre_NoExistente" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testCargarDatosAlbum_ArtistaExiste" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testGetAlbumsByGeneroSinAlbumes" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testCambioEstadoSubscripcion_SinSubscripcion" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testAgregarTemaListaConListaPorDefecto" classname="testUnitarios.sistemaTest" time="0.003"/>
+  <testcase name="testObtenerUsuarioMail_UsuarioExiste" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testSeguir_ALBUM" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testAltaListaPart_CuandoLaListaYaExiste" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testSeguir_LISTA" classname="testUnitarios.sistemaTest" time="0.003"/>
+  <testcase name="testTraerAlbumesFavoritosPorIdCliente" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testAddGeneroAlbumGeneroNoExistente" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testTipoLista_ListaPorDefecto" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testGetAlbumsByArtista_NoAlbums" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testListarListas_SinListas" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testTraerListaPorDefectoConNombreIgual" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testGetAlbumGenerico" classname="testUnitarios.sistemaTest" time="0"/>
+  <testcase name="testGetSeguidores_UsuarioNoEsCliente" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testListarGenerosSinPadre" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testCargarGenerosSys" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testGetDataListasReproduccionAjax_ListaPorDefecto" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testCargarDatosAlbum_ArtistaNoExiste" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testTraerListaDefGeneroNombre_Existente" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testEsPublicaLista_ListaNoPublica" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testListar_Listas_A_Seguir_ListaParticularPublica_NoFavorita" classname="testUnitarios.sistemaTest" time="0.003"/>
+  <testcase name="testTraerAlbumes_ListaNoVacia" classname="testUnitarios.sistemaTest" time="0.003"/>
+  <testcase name="testGetLista_NotFound" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testTraerTemasPorIdListaReproduccion" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testTraerListaPorDefectoConNombreNoIgual" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testListar_Temas_A_Seguir" classname="testUnitarios.sistemaTest" time="0.003"/>
+  <testcase name="testEncontrarListaParticular_ListaVacia" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testAltaListaDef_CuandoLaListaYaExiste" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testAltaPerfil_ClienteNuevo" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testListar_Listas_A_Seguir_NoListaParticular" classname="testUnitarios.sistemaTest" time="0.003"/>
+  <testcase name="testAltaGenero_GeneroRepetido" classname="testUnitarios.sistemaTest" time="0.002"/>
+  <testcase name="testEliminarListaFavoritaCliente" classname="testUnitarios.sistemaTest" time="0.003"/>
+  <testcase name="testGetDataTemasAjax" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testEncontrarListaParticular_NombreListaNoCoincide" classname="testUnitarios.sistemaTest" time="0.003"/>
+  <testcase name="testTraerNickNamesClientes" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testGetTema_TemaExists" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testTraerListasDefectoPorGenero_NoListas" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testEliminarTemaListaDef" classname="testUnitarios.sistemaTest" time="0.004"/>
+  <testcase name="testListarListasDef_SinListasPorDefecto" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testGetAlbumsByGeneroConAlbumes" classname="testUnitarios.sistemaTest" time="0.001"/>
+  <testcase name="testModificarListaParticularPorId" classname="testUnitarios.sistemaTest" time="0.002"/>
+</testsuite>

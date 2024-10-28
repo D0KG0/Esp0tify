@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Cliente.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">EspotifyA</a> &gt; <a href="index.source.html" class="el_package">logica</a> &gt; <span class="el_source">Cliente.java</span></div><h1>Cliente.java</h1><pre class="source lang-java linenums">/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package logica;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import jakarta.persistence.Entity;
+import java.util.HashMap;
+import java.util.Map;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
+
+/**
+ *
+ * @author dokgo
+ */
+@Entity
+public class Cliente extends Usuario implements Serializable {
+    
+    
+    
+<span class="fc" id="L24">    public Cliente() {}</span>
+
+    public Cliente(String nickname, String nombre, String apellido, String password, String email, LocalDate fechaNac, String imagenPerfil, String tipo) {
+<span class="fc" id="L27">        super(nickname, nombre, apellido, password, email, fechaNac, imagenPerfil, tipo);</span>
+<span class="fc" id="L28">    }</span>
+    
+    //brian
+    //Seguir y dejar de seguir
+<span class="fc" id="L32">    @ManyToMany</span>
+    private ArrayList&lt; Usuario&gt; usuariosSiguiendo = new ArrayList&lt;&gt;();
+<span class="fc" id="L34">    @ManyToMany</span>
+     private ArrayList&lt;ListaReproduccion&gt; listasFavoritas = new ArrayList&lt;&gt;();
+<span class="fc" id="L36">    @ManyToMany</span>
+    private ArrayList&lt;ListaParticular&gt; listasDeCliente = new ArrayList&lt;&gt;();
+<span class="fc" id="L38">    @ManyToMany</span>
+    private ArrayList&lt;Tema&gt; temasFavoritos = new ArrayList&lt;&gt;(); 
+<span class="fc" id="L40">    @ManyToMany</span>
+    private ArrayList&lt;Album&gt; albumesFavoritos = new ArrayList&lt;&gt;();
+    @OneToOne
+    private Subscripcion sub;
+
+    public ArrayList&lt;Usuario&gt; getUsuariosSiguiendo() {
+<span class="fc" id="L46">        return usuariosSiguiendo;</span>
+    }
+
+    public void setUsuariosSiguiendo(ArrayList&lt;Usuario&gt; usuariosSiguiendo) {
+<span class="fc" id="L50">        this.usuariosSiguiendo = usuariosSiguiendo;</span>
+<span class="fc" id="L51">    }</span>
+
+    public ArrayList&lt;ListaReproduccion&gt; getListasFavoritas() {
+<span class="fc" id="L54">        return listasFavoritas;</span>
+    }
+
+    public void setListasFavoritas(ArrayList&lt;ListaReproduccion&gt; listasFavoritas) {
+<span class="fc" id="L58">        this.listasFavoritas = listasFavoritas;</span>
+<span class="fc" id="L59">    }</span>
+
+    public ArrayList&lt;ListaParticular&gt; getListasDeCliente() {
+<span class="nc" id="L62">        return listasDeCliente;</span>
+    }
+
+    public void setListasDeCliente(ArrayList&lt;ListaParticular&gt; listasDeCliente) {
+<span class="nc" id="L66">        this.listasDeCliente = listasDeCliente;</span>
+<span class="nc" id="L67">    }</span>
+
+    public ArrayList&lt;Tema&gt; getTemasFavoritos() {
+<span class="fc" id="L70">        return temasFavoritos;</span>
+    }
+
+    public void setTemasFavoritos(ArrayList&lt;Tema&gt; temasFavoritos) {
+<span class="fc" id="L74">        this.temasFavoritos = temasFavoritos;</span>
+<span class="fc" id="L75">    }</span>
+
+    public ArrayList&lt;Album&gt; getAlbumesFavoritos() {
+<span class="fc" id="L78">        return albumesFavoritos;</span>
+    }
+
+    public void setAlbumesFavoritos(ArrayList&lt;Album&gt; albumesFavoritos) {
+<span class="fc" id="L82">        this.albumesFavoritos = albumesFavoritos;</span>
+<span class="fc" id="L83">    }</span>
+
+      public void agrgarListaAListasCreadas(ListaParticular lp){
+<span class="fc" id="L86">        this.listasDeCliente.add(lp);</span>
+<span class="fc" id="L87">    }</span>
+      
+      public void eliminarListaFavorita(int idLista) {
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">    listasFavoritas.removeIf(lista -&gt; lista.getId() == idLista);</span>
+<span class="fc" id="L91">}</span>
+    
+    public void eliminarTemaFavorito(Long idTema) {
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">    temasFavoritos.removeIf(temas -&gt; temas.getId() == idTema);</span>
+<span class="fc" id="L95">}</span>
+
+    public void eliminarAlbumesFavoritos(Long idAlbum) {
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        albumesFavoritos.removeIf(albumes -&gt; albumes.getId() == idAlbum);</span>
+<span class="fc" id="L99">    }</span>
+    
+    //Favoritos
+    
+    public void agregarAlbumFavorito(Album album) {
+<span class="fc" id="L104">            albumesFavoritos.add(album);</span>
+<span class="fc" id="L105">    }</span>
+
+    public void agregarTemaFavorito(Tema tema) {
+<span class="fc" id="L108">            temasFavoritos.add(tema);</span>
+        
+<span class="fc" id="L110">    }</span>
+
+    public void agregarListaFavorita(ListaReproduccion lista) {
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        if (!listasFavoritas.contains(lista)) {</span>
+<span class="fc" id="L114">            listasFavoritas.add(lista);</span>
+        }
+<span class="fc" id="L116">    }</span>
+    
+    //junittest
+    public ArrayList&lt;Album&gt; getAlbumsFavoritos() {
+<span class="fc" id="L120">        return albumesFavoritos;</span>
+    }
+
+    public Subscripcion getSub() {
+<span class="fc" id="L124">        return sub;</span>
+    }
+
+    public void setSub(Subscripcion sub) {
+<span class="fc" id="L128">        this.sub = sub;</span>
+<span class="fc" id="L129">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

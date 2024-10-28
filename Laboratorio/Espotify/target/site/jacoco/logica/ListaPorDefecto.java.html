@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ListaPorDefecto.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">EspotifyA</a> &gt; <a href="index.source.html" class="el_package">logica</a> &gt; <span class="el_source">ListaPorDefecto.java</span></div><h1>ListaPorDefecto.java</h1><pre class="source lang-java linenums">/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package logica;
+
+import jakarta.persistence.Entity;
+
+/**
+ *
+ * @author frank
+ */
+@Entity
+public class ListaPorDefecto extends ListaReproduccion {
+    private String genero;
+
+    public ListaPorDefecto(String nombre, String imagen, String gen) {
+<span class="fc" id="L18">        super(nombre, imagen);</span>
+<span class="fc" id="L19">        this.genero = gen;</span>
+<span class="fc" id="L20">    }</span>
+
+<span class="fc" id="L22">    public ListaPorDefecto() {</span>
+<span class="fc" id="L23">    }</span>
+    
+    //Getters y Setters
+
+    public String getGenero() {
+<span class="fc" id="L28">        return genero;</span>
+    }
+
+    public void setGenero(String genero) {
+<span class="fc" id="L32">        this.genero = genero;</span>
+<span class="fc" id="L33">    }</span>
+    
+    
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

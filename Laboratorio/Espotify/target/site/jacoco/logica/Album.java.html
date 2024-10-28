@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Album.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">EspotifyA</a> &gt; <a href="index.source.html" class="el_package">logica</a> &gt; <span class="el_source">Album.java</span></div><h1>Album.java</h1><pre class="source lang-java linenums">package logica;
+import datatypes.DataAlbum;
+import datatypes.DataTema;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import jakarta.persistence.Basic;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+
+
+
+@Entity
+public class Album implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Se usa un ID autogenerado
+    private Long id;
+    
+    private String nombre ;
+    @Basic
+    private Integer fechaCreacion;
+    private String ImagenAlbum;
+
+    @ManyToOne
+    @JoinColumn(name = &quot;artista_nombre&quot;)
+    private Artista artista;
+
+<span class="fc" id="L40">    @OneToMany(mappedBy = &quot;album&quot;, cascade = CascadeType.ALL, orphanRemoval = true)</span>
+    private List&lt;Tema&gt; Temas = new ArrayList&lt;&gt;();
+
+<span class="fc" id="L43">    @ManyToMany//(cascade = CascadeType.PERSIST)</span>
+    @JoinTable(
+    name = &quot;ALBUM_GENERO&quot;, // Nombre de la tabla intermedia
+    joinColumns = @JoinColumn(name = &quot;album_id&quot;), // Columna que hace referencia a Album
+    inverseJoinColumns = @JoinColumn(name = &quot;genero_nombre&quot;)) // Columna que hace referencia a Genero
+    private List&lt;Genero&gt; Generos = new ArrayList&lt;&gt;();
+
+<span class="fc" id="L50">    public Album() {</span>
+<span class="fc" id="L51">        this.nombre = &quot;nuevoAlbum&quot;;</span>
+<span class="fc" id="L52">    }</span>
+
+<span class="fc" id="L54">    public Album(String nombre, Integer fechaCreacion, String imagen) {</span>
+<span class="fc" id="L55">        this.nombre = nombre;</span>
+<span class="fc" id="L56">        this.fechaCreacion = fechaCreacion;</span>
+<span class="fc" id="L57">        this.ImagenAlbum = imagen;</span>
+        
+<span class="fc" id="L59">    }</span>
+
+    // Constructor por copia
+<span class="fc" id="L62">    public Album(Album otroAlbum) {</span>
+<span class="fc" id="L63">        this.nombre = otroAlbum.nombre;</span>
+<span class="fc" id="L64">        this.fechaCreacion = otroAlbum.fechaCreacion;</span>
+<span class="fc" id="L65">        this.ImagenAlbum = otroAlbum.ImagenAlbum;</span>
+<span class="fc" id="L66">        this.artista = otroAlbum.artista;</span>
+       
+<span class="fc" id="L68">        this.Temas = otroAlbum.Temas;</span>
+
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">        for (Tema tema : Temas){</span>
+<span class="nc" id="L71">            tema.setAlbum(this);</span>
+<span class="nc" id="L72">        }</span>
+<span class="fc" id="L73">        this.Generos = otroAlbum.Generos;   </span>
+<span class="fc" id="L74">    }</span>
+
+    public void copia(Album otroAlbum) {
+<span class="fc" id="L77">        this.nombre = otroAlbum.nombre;</span>
+<span class="fc" id="L78">        this.fechaCreacion = otroAlbum.fechaCreacion;</span>
+<span class="fc" id="L79">        this.ImagenAlbum = otroAlbum.ImagenAlbum;</span>
+<span class="fc" id="L80">        this.artista = otroAlbum.artista;</span>
+       
+<span class="fc" id="L82">        this.Temas = otroAlbum.Temas;</span>
+
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        for (Tema tema : Temas){</span>
+<span class="fc" id="L85">            tema.setAlbum(this);</span>
+<span class="fc" id="L86">        }</span>
+<span class="fc" id="L87">        this.Generos = otroAlbum.Generos;   </span>
+<span class="fc" id="L88">    }</span>
+    
+    /////
+    public void limpiarAlbum() {
+<span class="fc" id="L92">        this.id = null;</span>
+<span class="fc" id="L93">        this.nombre = null; </span>
+<span class="fc" id="L94">        this.fechaCreacion = null; </span>
+<span class="fc" id="L95">        this.ImagenAlbum = null; </span>
+<span class="fc" id="L96">        this.artista = null;</span>
+        
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">        if (this.Temas != null) {</span>
+<span class="fc" id="L99">            Iterator&lt;Tema&gt; it = this.Temas.iterator();</span>
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">            while (it.hasNext()) {</span>
+<span class="nc" id="L101">                it.next();</span>
+<span class="nc" id="L102">                it.remove();</span>
+            }
+        }
+        
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">        if (this.Generos != null) {</span>
+<span class="fc" id="L107">            Iterator&lt;Genero&gt; it = this.Generos.iterator();</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">            while (it.hasNext()) {</span>
+<span class="nc" id="L109">                it.next();</span>
+<span class="nc" id="L110">                it.remove();</span>
+            }
+        }
+<span class="fc" id="L113">    }</span>
+
+    public String getNombre() {
+<span class="fc" id="L116">        return nombre;</span>
+    }
+
+    public void setNombre(String nombre) {
+<span class="fc" id="L120">        this.nombre = nombre;</span>
+<span class="fc" id="L121">    }</span>
+
+    public Integer getFechaCreacion() {
+<span class="fc" id="L124">        return fechaCreacion;</span>
+    }
+
+    public Long getId(){
+<span class="fc" id="L128">        return id;</span>
+    }
+    
+    public void setId(Long idc){
+<span class="fc" id="L132">        this.id = idc;</span>
+<span class="fc" id="L133">    }</span>
+    
+    public void setFechaCreacion(Integer fechaCreacion) {
+<span class="fc" id="L136">        this.fechaCreacion = fechaCreacion;</span>
+<span class="fc" id="L137">    }</span>
+
+    public String getImagenAlbum() {
+<span class="fc" id="L140">        return ImagenAlbum;</span>
+    }
+
+    public void setImagenAlbum(String ImagenAlbum) {
+<span class="fc" id="L144">        this.ImagenAlbum = ImagenAlbum;</span>
+<span class="fc" id="L145">    }</span>
+    
+     public Artista getArtista() {
+<span class="fc" id="L148">        return artista;</span>
+    }
+
+    public void setArtista(Artista artista) {
+<span class="fc" id="L152">        this.artista = artista;</span>
+<span class="fc" id="L153">    }</span>
+    
+    public List&lt;Tema&gt; getTemas() {
+<span class="fc" id="L156">        return this.Temas;</span>
+    }
+    
+    public void setTemas(List&lt;Tema&gt; temas){
+<span class="nc" id="L160">        this.Temas = temas;</span>
+<span class="nc" id="L161">    }</span>
+    
+    public List&lt;Genero&gt; getGeneros() {
+<span class="fc" id="L164">        return this.Generos;</span>
+    }
+    
+   public void addTema(Tema tema){
+<span class="fc" id="L168">        this.Temas.add(tema);</span>
+<span class="fc" id="L169">    }</span>
+    
+   public void addGenero(Genero genero){
+<span class="fc" id="L172">        this.Generos.add(genero);</span>
+<span class="fc" id="L173">    }</span>
+   
+   public Tema altaTema(String nombre, String duracion, Integer pos, String direccionWeb, String archivo){
+<span class="fc" id="L176">        Tema nuevoTema = new Tema(nombre, duracion, pos, direccionWeb, archivo);</span>
+<span class="fc" id="L177">        this.addTema(nuevoTema);</span>
+<span class="fc" id="L178">        return nuevoTema;</span>
+    }
+   
+   public Tema getTema(String nombreTema){
+<span class="fc" id="L182">       Tema temae = null;</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">       for (Tema tema : Temas){</span>
+<span class="pc bpc" id="L184" title="1 of 2 branches missed.">           if(tema.getNombre().equals(nombreTema)){</span>
+<span class="nc" id="L185">               temae = tema;</span>
+           }
+<span class="fc" id="L187">       }</span>
+<span class="fc" id="L188">       return temae;</span>
+   }
+    public DataAlbum getDataAlbum(){
+<span class="fc" id="L191">        Collection&lt;DataTema&gt; temas =  new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L192">        Collection&lt;String&gt; generos =  new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L193">        DataTema dtTema = null;</span>
+        
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">        for (Tema entry : this.Temas){</span>
+<span class="nc" id="L196">            dtTema = entry.getDataTemaI();</span>
+<span class="nc" id="L197">            temas.add(dtTema);</span>
+<span class="nc" id="L198">        }</span>
+        
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">        for (Genero entry : this.Generos){</span>
+<span class="nc" id="L201">            generos.add(entry.getNombre());</span>
+<span class="nc" id="L202">        }</span>
+       
+<span class="fc" id="L204">        DataAlbum dt_alb = new DataAlbum(getId(), getNombre(), getFechaCreacion(), getImagenAlbum(), temas, generos, artista.getNickname());</span>
+<span class="fc" id="L205">    return dt_alb;</span>
+    }
+ 
+    public DataAlbum devolverData(){
+<span class="fc" id="L209">        Collection&lt;DataTema&gt; dataTemas = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">    for (Tema tema : getTemas()) {</span>
+<span class="fc" id="L211">        dataTemas.add(tema.getDataTemaI()); </span>
+<span class="fc" id="L212">    }</span>
+
+<span class="fc" id="L214">    Collection&lt;String&gt; generos = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">    for (Genero genero : getGeneros()) {</span>
+<span class="fc" id="L216">        generos.add(genero.getNombre());</span>
+<span class="fc" id="L217">    }</span>
+
+<span class="fc" id="L219">    return new DataAlbum(getNombre(), getFechaCreacion(), getImagenAlbum(), dataTemas, generos, artista.getNickname());</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

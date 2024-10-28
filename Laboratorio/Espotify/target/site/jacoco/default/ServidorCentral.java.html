@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ServidorCentral.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">EspotifyA</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">ServidorCentral.java</span></div><h1>ServidorCentral.java</h1><pre class="source lang-java linenums">/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ */
+
+/**
+ *
+ * @author dokgo
+ */
+
+import presentacionGUI.Principal;
+import controladores.Fabrica;
+import controladores.iSistema;
+import excepciones.UsuarioRepetidoException;
+import persistencia.ControladorPersistencia;
+import persistencia.iControladorPersistencia;
+
+
+<span class="nc" id="L18">public class ServidorCentral {</span>
+    ControladorPersistencia cpu;
+<span class="nc" id="L20">    iSistema sys = new Fabrica().getSistema(cpu);</span>
+    public static void main(String[] args) throws UsuarioRepetidoException {
+<span class="nc" id="L22">        Fabrica f = new Fabrica();</span>
+        
+        //iControladorPersistencia cpu = f.getControladorPersistencia();
+        
+        
+<span class="nc" id="L27">        Principal programa = new Principal();</span>
+<span class="nc" id="L28">        programa.setVisible(true);</span>
+<span class="nc" id="L29">        programa.setLocationRelativeTo(null);</span>
+        
+<span class="nc" id="L31">    }</span>
+   
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

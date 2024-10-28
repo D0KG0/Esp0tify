@@ -1,0 +1,2052 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Sistema.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">EspotifyA</a> &gt; <a href="index.source.html" class="el_package">controladores</a> &gt; <span class="el_source">Sistema.java</span></div><h1>Sistema.java</h1><pre class="source lang-java linenums">
+package controladores;
+
+import java.time.LocalDate;
+import logica.Usuario;
+import logica.Cliente;
+import logica.Artista;
+import logica.Genero;
+import logica.Album;
+import logica.ListaParticular;
+import logica.ListaPorDefecto;
+import logica.ListaReproduccion;
+import excepciones.UsuarioRepetidoException;
+import excepciones.UsuarioNoExisteException;
+import excepciones.ListaRepetidaException;
+import excepciones.GeneroRepetidoException;
+import datatypes.DataUsuario;
+import datatypes.DataAlbum;
+import datatypes.DataGenero;
+import datatypes.DataLista;
+import datatypes.DataSub;
+import datatypes.DataTema;
+import excepciones.AlbumNoExisteException;
+import excepciones.GeneroNoExisteException;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import logica.Subscripcion;
+import logica.Tema;
+import persistencia.ControladorPersistencia;
+
+public class Sistema implements iSistema{
+    
+    /*private String nickname;
+    private String nombre;
+    private String apellido;
+    private String email;
+    private LocalDate fechaNac;
+    private String imagenPerfil;
+    private String tipo;*/
+    
+    //album
+<span class="fc" id="L52">    private Map&lt;String, Genero&gt; Generos = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L53">    private Album albumGenerico = new Album();</span>
+    //
+    
+<span class="fc" id="L56">    static Sistema instancia = null;</span>
+    ControladorPersistencia cpu;
+    
+    
+    public static Sistema getInstance(ControladorPersistencia cpu){
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        if(instancia == null){</span>
+<span class="fc" id="L62">            instancia = new Sistema(cpu);</span>
+        }
+<span class="fc" id="L64">        return instancia;</span>
+    }
+    
+<span class="fc" id="L67">    public Sistema(ControladorPersistencia cpu){</span>
+<span class="fc" id="L68">        this.cpu = cpu;</span>
+<span class="fc" id="L69">    }</span>
+    
+    
+    public static final String CLIENTE = &quot;cliente&quot;;
+    public static final String ARTISTA = &quot;artista&quot;;
+    
+<span class="fc" id="L75">    private Map&lt;String, Usuario&gt; usuariosNick = new HashMap&lt;&gt;();</span>
+    
+    //Registrar usuario
+        public void altaPerfil(String nickname, String nombre, String apellido, String password, String email, LocalDate fechaNac, String imagen, String biografia, String sitioWeb, String tipo) throws UsuarioRepetidoException{
+<span class="fc" id="L79">            Usuario u = obtenerUsuario(nickname);</span>
+            
+<span class="fc bfc" id="L81" title="All 2 branches covered.">            if(u != null){</span>
+<span class="fc" id="L82">                throw new UsuarioRepetidoException(&quot;El usuario con el nickname&quot; + nickname + &quot; ya esta registrado&quot;);</span>
+            }else{
+<span class="fc bfc" id="L84" title="All 2 branches covered.">                if(CLIENTE.equals(tipo)){</span>
+<span class="fc" id="L85">                Cliente nuevoUsuario = new Cliente(nickname, nombre, apellido, password, email, fechaNac, imagen,tipo);</span>
+                //addUsuario(nuevoUsuario);
+<span class="fc" id="L87">                cpu.crearCliente(nuevoUsuario);</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">                }else if(ARTISTA.equals(tipo)){</span>
+<span class="fc" id="L89">                    Artista nuevoArtista = new Artista(nickname, nombre, apellido, password, email, fechaNac, imagen, biografia, sitioWeb, tipo);</span>
+                    //addUsuario(nuevoArtista);
+<span class="fc" id="L91">                    cpu.crearUsuario(nuevoArtista);</span>
+<span class="fc" id="L92">                }else{</span>
+<span class="fc" id="L93">                    throw new IllegalArgumentException(&quot;Tipo de usuario no reconocido: &quot; + tipo);</span>
+                }
+            }
+<span class="fc" id="L96">        }</span>
+        
+//        public DataUsuario[] getDataUsuarios() throws UsuarioNoExisteException{
+//            
+//            Usuario[] usrs = getUsuarios();
+//            if (usrs != null) {
+//                DataUsuario[] du = new DataUsuario[usrs.length];
+//                Usuario usuario;
+//
+//                // Para separar lógica de presentación, no se deben devolver los Usuario,
+//                // sino los DataUsuario
+//                for (int i = 0; i &lt; usrs.length; i++) {
+//                    usuario = usrs[i];
+//                    du[i] = usuario.devolverData();
+//                }
+//                return du;
+//            } else {
+//                throw new UsuarioNoExisteException(&quot;No existen usuarios registrados&quot;);
+//            }
+//        }
+        
+        //getclientes con persistencia
+    public DataUsuario[] getClientes() throws UsuarioNoExisteException {
+<span class="fc" id="L119">    List&lt;Cliente&gt; clientes = cpu.obtenerTodosLosClientes();</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">    if (!clientes.isEmpty()) {</span>
+<span class="fc" id="L121">        DataUsuario[] dataClientes = new DataUsuario[clientes.size()];</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">        for (int i = 0; i &lt; clientes.size(); i++) {</span>
+<span class="fc" id="L123">            dataClientes[i] = clientes.get(i).devolverData();</span>
+        }
+<span class="fc" id="L125">        return dataClientes;</span>
+    } else {
+<span class="fc" id="L127">        throw new UsuarioNoExisteException(&quot;No existen clientes registrados&quot;);</span>
+        }
+    }
+
+//    public DataUsuario[] getArtistas() throws UsuarioNoExisteException {
+//        Usuario[] usrs = getUsuarios();
+//        if (usrs != null) {
+//            return filtrarUsuariosPorTipo(usrs, ARTISTA);
+//        } else {
+//            throw new UsuarioNoExisteException(&quot;No existen usuarios registrados&quot;);
+//        }
+//    }
+    
+    //getartistas con persistencia
+    public DataUsuario[] getArtistas() throws UsuarioNoExisteException {
+<span class="fc" id="L142">    List&lt;Artista&gt; artistas = cpu.obtenerTodosLosArtistas();</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">    if (!artistas.isEmpty()) {</span>
+<span class="fc" id="L144">        DataUsuario[] dataArtistas = new DataUsuario[artistas.size()];</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">        for (int i = 0; i &lt; artistas.size(); i++) {</span>
+<span class="fc" id="L146">            dataArtistas[i] = artistas.get(i).devolverData();</span>
+        }
+<span class="fc" id="L148">        return dataArtistas;</span>
+    } else {
+<span class="fc" id="L150">        throw new UsuarioNoExisteException(&quot;No existen artistas registrados&quot;);</span>
+        }
+    }
+    
+    
+
+//    public DataUsuario[] filtrarUsuariosPorTipo(Usuario[] usuarios, String tipo) {
+//        return Arrays.stream(usuarios)
+//                     .filter(usuario -&gt; tipo.equals(usuario.getTipo()))
+//                     .map(Usuario::devolverData)
+//                     .toArray(DataUsuario[]::new);
+//    }
+    
+    
+//    public boolean existeUsuario(String nickname){
+//        Usuario usuario = obtenerUsuario(nickname);
+//        return usuario != null;
+//    }
+    
+    public boolean existeUsuario(String nickname){
+<span class="fc" id="L170">        Usuario usuario = cpu.obtenerUsuario(nickname);</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">        return usuario != null;</span>
+    }
+    
+    public boolean existeMail(String email) {
+<span class="fc" id="L175">        return cpu.ExisteMail(email);</span>
+    }
+    
+    
+//    public void addUsuario(Usuario user){
+//        String nick = user.getNickname();
+//        usuariosNick.put(nick, user);
+//    }
+
+//    public Usuario obtenerUsuario(String nick){
+//        return ((Usuario) usuariosNick.get(nick));
+//    }
+    
+    public Usuario obtenerUsuario(String nick){
+<span class="fc" id="L189">        return ((Usuario) cpu.obtenerUsuario(nick));</span>
+    }
+    
+    public Usuario obtenerUsuarioMail(String email){
+<span class="fc" id="L193">        return ((Usuario) cpu.obtenerUsuarioMail(email));</span>
+    }
+    
+    public Cliente ObtenerCliente(String nick){
+<span class="fc" id="L197">        return ((Cliente) cpu.obtenerCliente(nick));</span>
+        
+    }
+    
+    public Artista ObtenerArtista(String nick){
+<span class="fc" id="L202">        return ((Artista) cpu.obtenerArtista(nick));</span>
+    }
+    
+    
+//    public Usuario[] getUsuarios(){
+//        if(usuariosNick.isEmpty()){
+//            return null;
+//        }else{
+//            Collection&lt;Usuario&gt; usrs = usuariosNick.values();
+//            Object[] o = usrs.toArray();
+//            Usuario[] usuarios = new Usuario[o.length];
+//            for (int i = 0; i &lt; o.length; i++){
+//                usuarios[i] = (Usuario) o[i];
+//            }
+//            return usuarios;
+//        }
+//    }
+    
+    
+    
+    //Modificado para mostrar en sql //////////////////////////
+//    public Usuario[] getUsuarios(){
+//        if(cpu.getUsuarios().isEmpty()){
+//            return null;
+//        }else{
+//            List&lt;Usuario&gt; usrs = cpu.getUsuarios();
+//            Object[] o = usrs.toArray();
+//            Usuario[] usuarios = new Usuario[o.length];
+//            for (int i = 0; i &lt; o.length; i++){
+//                usuarios[i] = (Usuario) o[i];
+//            }
+//            return usuarios;
+//        }
+//    }
+    
+    //Consultar perfil cliente/artista
+//    public List&lt;Cliente&gt; getSeguidores(String nicknameArtista){
+//        List&lt;Cliente&gt; seguidores = new ArrayList&lt;&gt;();
+//        
+//        List&lt;Usuario&gt; todosLosUsuarios = cpu.obtenerTodosLosUsuarios();
+//    
+//        for (Usuario usuario : todosLosUsuarios) {
+//            if (usuario instanceof Cliente) {
+//                Cliente cliente = (Cliente) usuario;
+//                if (cliente.getUsuariosSiguiendo().stream()
+//                        .anyMatch(usuarioSeguido -&gt; usuarioSeguido.getNickname().equals(nicknameArtista))) {
+//                    seguidores.add(cliente);
+//                }
+//            }
+//        }
+//    
+//        return seguidores;
+//    }
+    
+    public List&lt;DataUsuario&gt; getSeguidores(String nicknameArtista) {
+<span class="fc" id="L257">    List&lt;DataUsuario&gt; seguidores = new ArrayList&lt;&gt;();</span>
+    
+    // Obtener todos los usuarios como entidades originales
+<span class="fc" id="L260">    List&lt;Usuario&gt; todosLosUsuarios = cpu.obtenerTodosLosUsuarios();</span>
+
+<span class="fc bfc" id="L262" title="All 2 branches covered.">    for (Usuario usuario : todosLosUsuarios) {</span>
+        // Verificar si el Usuario es un Cliente
+<span class="fc bfc" id="L264" title="All 2 branches covered.">        if (usuario instanceof Cliente) {</span>
+<span class="fc" id="L265">            Cliente cliente = (Cliente) usuario;</span>
+
+            // Verificar si el cliente sigue al artista con el nickname especificado
+<span class="fc" id="L268">            if (cliente.getUsuariosSiguiendo().stream()</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">                    .anyMatch(artistaSeguido -&gt; artistaSeguido.getNickname().equals(nicknameArtista))) {</span>
+                // Convertir Cliente en DataUsuario y agregarlo a la lista
+<span class="fc" id="L271">                DataUsuario dataUsuario = new DataUsuario(</span>
+<span class="fc" id="L272">                        cliente.getNickname(),</span>
+<span class="fc" id="L273">                        cliente.getNombre(),</span>
+<span class="fc" id="L274">                        cliente.getApellido(),</span>
+<span class="fc" id="L275">                        cliente.getEmail(),</span>
+<span class="fc" id="L276">                        cliente.getFechaNac(),</span>
+<span class="fc" id="L277">                        cliente.getImagenPerfil()</span>
+                );
+<span class="fc" id="L279">                seguidores.add(dataUsuario);</span>
+            }
+        }
+<span class="fc" id="L282">    }</span>
+
+<span class="fc" id="L284">    return seguidores;</span>
+}
+
+    
+//    public List&lt;DataUsuario&gt; getSeguidores2(String nicknameArtista) {
+//    List&lt;DataUsuario&gt; seguidores = new ArrayList&lt;&gt;();
+//
+//    List&lt;DataUsuario&gt; todosLosUsuarios = cpu.obtenerTodosLosDataUsuarios();
+//
+//    for (DataUsuario dataUsuario : todosLosUsuarios) {
+//        if (dataUsuario instanceof DataCliente) {
+//            DataCliente dataCliente = (DataCliente) dataUsuario;
+//            if (dataCliente.getUsuariosSiguiendo().stream()
+//                    .anyMatch(usuarioSeguido -&gt; usuarioSeguido.getNickname().equals(nicknameArtista))) {
+//                seguidores.add(dataCliente);
+//            }
+//        }
+//    }
+//
+//    return seguidores;
+//}
+    
+//    public Map&lt;String, ArrayList&lt;String&gt;&gt; UsuarioSeguidos(String cliente_seleccionado){
+//        Cliente cliente_elegido = cpu.obtenerCliente(cliente_seleccionado);
+//        ArrayList&lt;Usuario&gt; usuarios = cliente_elegido.getUsuariosSiguiendo();
+//
+//        ArrayList&lt;String&gt; clientesSeguidos = new ArrayList&lt;&gt;();
+//        ArrayList&lt;String&gt; artistasSeguidos = new ArrayList&lt;&gt;();
+//
+//        for (Usuario usuario : usuarios) {
+//            if (usuario instanceof Cliente) {
+//                clientesSeguidos.add(usuario.getNickname());
+//            } else if (usuario instanceof Artista) {
+//                artistasSeguidos.add(usuario.getNickname());
+//            }
+//        }
+//
+//        Map&lt;String, ArrayList&lt;String&gt;&gt; usuariosMap = new HashMap&lt;&gt;();
+//        usuariosMap.put(&quot;clientes&quot;, clientesSeguidos);
+//        usuariosMap.put(&quot;artistas&quot;, artistasSeguidos);
+//
+//        return usuariosMap;
+//    }
+    
+    public Map&lt;String, ArrayList&lt;DataUsuario&gt;&gt; UsuarioSeguidos(String cliente_seleccionado) {
+<span class="fc" id="L329">    Cliente cliente_elegido = cpu.obtenerCliente(cliente_seleccionado);</span>
+<span class="fc" id="L330">    ArrayList&lt;Usuario&gt; usuarios = cliente_elegido.getUsuariosSiguiendo();</span>
+
+<span class="fc" id="L332">    ArrayList&lt;DataUsuario&gt; clientesSeguidos = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L333">    ArrayList&lt;DataUsuario&gt; artistasSeguidos = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L335" title="All 2 branches covered.">    for (Usuario usuario : usuarios) {</span>
+<span class="fc" id="L336">        DataUsuario dataUsuario = new DataUsuario(</span>
+<span class="fc" id="L337">            usuario.getNickname(), </span>
+<span class="fc" id="L338">            usuario.getNombre(), </span>
+<span class="fc" id="L339">            usuario.getApellido(), </span>
+<span class="fc" id="L340">            usuario.getEmail(), </span>
+<span class="fc" id="L341">            usuario.getFechaNac(), </span>
+<span class="fc" id="L342">            usuario.getImagenPerfil()</span>
+        );
+
+<span class="fc bfc" id="L345" title="All 2 branches covered.">        if (usuario instanceof Cliente) {</span>
+<span class="fc" id="L346">            clientesSeguidos.add(dataUsuario); // Añadir DataUsuario en lugar de solo nickname</span>
+<span class="fc bfc" id="L347" title="All 2 branches covered.">        } else if (usuario instanceof Artista) {</span>
+<span class="fc" id="L348">            artistasSeguidos.add(dataUsuario); // Añadir DataUsuario en lugar de solo nickname</span>
+        }
+<span class="fc" id="L350">    }</span>
+
+<span class="fc" id="L352">    Map&lt;String, ArrayList&lt;DataUsuario&gt;&gt; usuariosMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L353">    usuariosMap.put(&quot;clientes&quot;, clientesSeguidos);  // Ahora almacena DataUsuario</span>
+<span class="fc" id="L354">    usuariosMap.put(&quot;artistas&quot;, artistasSeguidos);  // Ahora almacena DataUsuario</span>
+
+<span class="fc" id="L356">    return usuariosMap;</span>
+}
+    
+    
+    public boolean esPublicaLista(int idLista){
+<span class="fc" id="L361">        ListaParticular lp = cpu.traerListaParticularPorId(idLista);</span>
+
+<span class="fc bfc" id="L363" title="All 2 branches covered.">        if(lp.isPublica()){</span>
+<span class="fc" id="L364">            return true;</span>
+        }
+
+<span class="fc" id="L367">        return false;</span>
+    }
+    
+    //michel
+    //Registrar album
+    
+    public void altaAlbum(){
+<span class="fc" id="L374">        Album nuevoAlbum = new Album(albumGenerico);</span>
+        //Album nuevoAlbum = new Album();
+<span class="fc" id="L376">        cpu.crearAlbum(nuevoAlbum);</span>
+<span class="fc" id="L377">        albumGenerico.limpiarAlbum();</span>
+<span class="fc" id="L378">    }</span>
+    
+//    public void actualizoAlbum(){
+//        albumGenerico.setNombre()
+//        Album alb = cpu.obtenerAlbum(&quot;nuevoAlbum&quot;);
+//        cpu.actualizarAlbum(alb);
+//    }
+    
+    public void cargarDatosAlbum(String nombre, String nombreArtista, Integer fechaCreacion, String imagen){
+<span class="fc" id="L387">        Artista ar = (Artista) cpu.obtenerUsuario(nombreArtista);</span>
+<span class="fc bfc" id="L388" title="All 2 branches covered.">        if (ar != null) {</span>
+<span class="fc" id="L389">        albumGenerico.setNombre(nombre);</span>
+<span class="fc" id="L390">        albumGenerico.setFechaCreacion(fechaCreacion);</span>
+<span class="fc" id="L391">        albumGenerico.setImagenAlbum(imagen);</span>
+<span class="fc" id="L392">        albumGenerico.setArtista(ar);  // Asocia el artista</span>
+    }
+<span class="fc" id="L394">    }</span>
+    
+    public void cargarGenerosSys(){
+<span class="fc" id="L397">        List&lt;Genero&gt; listaGen = cpu.getGeneros();</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">        for (Genero gen : listaGen){</span>
+<span class="fc" id="L399">            this.Generos.put(gen.getNombre(), gen);</span>
+<span class="fc" id="L400">        }</span>
+<span class="fc" id="L401">    }</span>
+    
+    public Album getAlbumEspecificoArt(String nombreA, String nombreArtista){
+<span class="fc" id="L404">        Album album = cpu.getAlbumArt(nombreArtista, nombreA);</span>
+<span class="fc" id="L405">        return album;</span>
+    }
+    
+    public DataAlbum getAlbumEspecificoArt2(String nombreA, String nombreArtista){
+<span class="fc" id="L409">        Album album = cpu.getAlbumArt(nombreArtista, nombreA);</span>
+        
+<span class="fc" id="L411">        DataAlbum dataAlbum = new DataAlbum();</span>
+
+<span class="fc" id="L413">        dataAlbum.setNombre(album.getNombre());</span>
+<span class="fc" id="L414">        dataAlbum.setFechaCreacion(album.getFechaCreacion());</span>
+<span class="fc" id="L415">        dataAlbum.setImagenAlbum(album.getImagenAlbum());</span>
+
+<span class="fc" id="L417">        List&lt;String&gt; dataGeneros = album.getGeneros().stream()</span>
+<span class="fc" id="L418">            .map(Genero::getNombre)</span>
+<span class="fc" id="L419">            .collect(Collectors.toList());</span>
+<span class="fc" id="L420">        dataAlbum.setGeneros(dataGeneros);</span>
+
+<span class="fc" id="L422">        List&lt;DataTema&gt; dataTemas = album.getTemas().stream()</span>
+<span class="fc" id="L423">            .map(tema -&gt; new DataTema(</span>
+<span class="fc" id="L424">                tema.getNombre(),</span>
+<span class="fc" id="L425">                tema.getDuracion(),</span>
+<span class="fc" id="L426">                tema.getPosicion(),</span>
+<span class="fc" id="L427">                tema.getDireccionWeb(),</span>
+<span class="fc" id="L428">                tema.getArchivo()</span>
+                
+            ))
+<span class="fc" id="L431">            .collect(Collectors.toList());</span>
+<span class="fc" id="L432">        dataAlbum.setTemas(dataTemas);</span>
+
+<span class="fc" id="L434">        return dataAlbum;</span>
+    }
+    
+    public Album getAlbumEspecificoGen(String nombreA, String nombreGenero){
+<span class="fc" id="L438">        Album album = cpu.getAlbumGen(nombreGenero, nombreA);</span>
+        
+        
+<span class="fc" id="L441">        return album;</span>
+    }
+    
+    public DataAlbum getAlbumEspecificoGen2(String nombreA, String nombreGenero){
+<span class="fc" id="L445">        Album album = cpu.getAlbumGen(nombreGenero, nombreA);</span>
+
+<span class="fc" id="L447">        DataAlbum dataAlbum = new DataAlbum();</span>
+
+<span class="fc" id="L449">        dataAlbum.setNombre(album.getNombre());</span>
+<span class="fc" id="L450">        dataAlbum.setFechaCreacion(album.getFechaCreacion());</span>
+<span class="fc" id="L451">        dataAlbum.setImagenAlbum(album.getImagenAlbum());</span>
+
+<span class="fc" id="L453">        List&lt;String&gt; dataGeneros = album.getGeneros().stream()</span>
+<span class="fc" id="L454">            .map(Genero::getNombre)</span>
+<span class="fc" id="L455">            .collect(Collectors.toList());</span>
+<span class="fc" id="L456">        dataAlbum.setGeneros(dataGeneros);</span>
+
+<span class="fc" id="L458">        List&lt;DataTema&gt; dataTemas = album.getTemas().stream()</span>
+<span class="fc" id="L459">            .map(tema -&gt; new DataTema(</span>
+<span class="fc" id="L460">                tema.getNombre(),</span>
+<span class="fc" id="L461">                tema.getDuracion(),</span>
+<span class="fc" id="L462">                tema.getPosicion(),</span>
+<span class="fc" id="L463">                tema.getDireccionWeb(),</span>
+<span class="fc" id="L464">                tema.getArchivo()</span>
+                
+            ))
+<span class="fc" id="L467">            .collect(Collectors.toList());</span>
+<span class="fc" id="L468">        dataAlbum.setTemas(dataTemas);</span>
+
+<span class="fc" id="L470">        return dataAlbum;</span>
+    }
+    
+    public Album getAlbumGenerico(){
+<span class="fc" id="L474">        return albumGenerico;</span>
+    }
+       
+    public boolean verificaAlbum(String nombreA, String nombreArtista){
+<span class="fc" id="L478">        Album album = cpu.getAlbumArt(nombreArtista, nombreA);</span>
+<span class="fc bfc" id="L479" title="All 2 branches covered.">        if(album != null){</span>
+<span class="fc" id="L480">        return true;</span>
+        }
+<span class="fc" id="L482">        return false;</span>
+    }
+    
+    public List&lt;DataAlbum&gt; getAllAlbums(){
+<span class="fc" id="L486">        return cpu.getAllAlbumes();</span>
+    }
+    
+//    public void desvinculaAlbum(String nombreA, String nombreArtista){
+//        Artista ar = (Artista) Usuario.obtenerUsuario(nombreArtista);
+//        ar.getAlbumesMap().remove(nombreA);
+//    }
+    
+    public void altaGenero(String nombre){
+<span class="fc" id="L495">        Genero nuevoGenero = new Genero(nombre);</span>
+<span class="fc" id="L496">        this.addGenero(nuevoGenero);</span>
+<span class="fc" id="L497">    }</span>
+    
+    public void altaTema(String nombreT, String duracion, Integer posicion, String direccionWeb, String archivo){
+<span class="fc" id="L500">        Tema tema = albumGenerico.altaTema(nombreT, duracion, posicion, direccionWeb, archivo);</span>
+        
+        //cpu.crearTema(tema);
+<span class="fc" id="L503">    }</span>
+
+    public void addGeneroAlbum(String nombreGenero){
+<span class="fc" id="L506">        List&lt;Genero&gt; genList = cpu.getGeneros();</span>
+<span class="fc" id="L507">        Genero genAgregar = cpu.obtenerGenero(nombreGenero);</span>
+        
+<span class="fc bfc" id="L509" title="All 2 branches covered.">        if(genAgregar != null){</span>
+<span class="fc bfc" id="L510" title="All 2 branches covered.">            for (Genero gen : genList){</span>
+<span class="fc bfc" id="L511" title="All 2 branches covered.">                if (gen.getNombre().equals(nombreGenero)){</span>
+<span class="fc bfc" id="L512" title="All 2 branches covered.">                    if (!albumGenerico.getGeneros().contains(gen)) {</span>
+<span class="fc" id="L513">                        albumGenerico.addGenero(genAgregar);</span>
+                        //addAlbumGenero(genAgregar.getNombre(),albumGenerico);
+
+                    }
+                    //cpu.actualizarAlbum(albumGenerico);
+                }
+<span class="fc" id="L519">            }</span>
+        }
+<span class="fc" id="L521">    }</span>
+    
+    
+    public void addGenero(Genero genero){
+<span class="fc" id="L525">        String nombreGenero = genero.getNombre();</span>
+<span class="fc" id="L526">        this.Generos.put(nombreGenero, genero);</span>
+<span class="fc" id="L527">    }</span>
+    
+    public Map&lt;String,Genero&gt; getGenerosMap() {
+<span class="fc" id="L530">    return Generos;</span>
+    }
+    
+    public void setAlbumGenerico(Album albumGenerico) {
+<span class="fc" id="L534">        this.albumGenerico = albumGenerico;</span>
+<span class="fc" id="L535">    }</span>
+    
+    public HashSet&lt;String&gt; getGeneros() {
+<span class="fc bfc" id="L538" title="All 2 branches covered.">        if (cpu.getGeneros().isEmpty()) {</span>
+<span class="fc" id="L539">            return new HashSet&lt;String&gt;();  </span>
+        }else {
+<span class="fc" id="L541">            HashSet&lt;String&gt; generos = new HashSet&lt;&gt;(); </span>
+<span class="fc bfc" id="L542" title="All 2 branches covered.">            for (Genero gen : cpu.getGeneros()) {</span>
+<span class="fc" id="L543">                generos.add(gen.getNombre());</span>
+<span class="fc" id="L544">            }</span>
+<span class="fc" id="L545">        return generos;</span>
+        }
+    }
+    
+//    public Collection&lt;DataAlbum&gt; getAlbumesArt(String nombreArtista){
+//        Artista art = (Artista) cpu.obtenerUsuario(nombreArtista);
+//        
+//        Collection&lt;Album&gt; albumes = cpu.getAlbumesArt(art);
+//        Collection&lt;DataAlbum&gt; dtAlbum = new ArrayList&lt;&gt;();
+//        
+//        if (art != null){
+//            for(Album album : albumes){
+//                dtAlbum.add(album.getDataAlbum());
+//            }
+//        }
+//        return dtAlbum;
+//    }
+//    
+//    public Collection&lt;DataAlbum&gt; getAlbumesGen(String nombreGenero){
+//        Genero gen = cpu.obtenerGenero(nombreGenero);
+//        Collection&lt;Album&gt; albumes = cpu.getAlbumesGen(nombreGenero);
+//        Collection&lt;DataAlbum&gt; dtAlbum = new ArrayList&lt;&gt;();
+//        
+//        
+//        if (gen != null){
+//            for(Album album : albumes){
+//                dtAlbum.add(album.getDataAlbum());
+//            }
+//        }
+//        
+//        return dtAlbum;
+//    }
+    
+    public Genero getGenero(String nombreGenero){
+<span class="fc" id="L579">        Genero gen = cpu.obtenerGenero(nombreGenero);</span>
+<span class="fc" id="L580">        return gen;</span>
+    }
+    
+    public String getPadre(String nombreGenero){
+<span class="fc" id="L584">        Genero gen = getGenero(nombreGenero);</span>
+<span class="fc" id="L585">        return gen.getPadre();</span>
+    }
+    //Fran
+    //Generos
+    public boolean encontrarGenero(String nom){
+<span class="fc bfc" id="L590" title="All 2 branches covered.">        if(cpu.obtenerGenero(nom) != null){</span>
+<span class="fc" id="L591">            return true;</span>
+<span class="fc" id="L592">        }else{ return false; }</span>
+    }
+    
+    public void altaGenero(String nom, String pad) throws GeneroRepetidoException{
+<span class="fc bfc" id="L596" title="All 2 branches covered.">        if(encontrarGenero(nom)){</span>
+<span class="fc" id="L597">            throw new GeneroRepetidoException(&quot;Ya existe un Genero con ese nombre, por favor corrijalo para continuar.&quot;);</span>
+        }else{
+<span class="fc" id="L599">            Genero gen = new Genero(nom,pad);</span>
+<span class="fc" id="L600">            cpu.crearGenero(gen);</span>
+        }
+<span class="fc" id="L602">    }</span>
+    
+    public Set&lt;String&gt; listarGeneros(){
+<span class="fc" id="L605">        Set&lt;String&gt; ret = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L606">        List&lt;Genero&gt; listGen = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L607" title="All 2 branches covered.">        for(Genero gen : cpu.getGeneros()){</span>
+<span class="fc" id="L608">            ret.add(gen.getNombre());</span>
+<span class="fc" id="L609">        }</span>
+<span class="fc" id="L610">        return ret;</span>
+    }
+    
+    public Set&lt;String&gt; listarGenerosSinPadre() {
+<span class="fc" id="L614">        Set&lt;String&gt; dtg = new HashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L615" title="All 2 branches covered.">        for (Genero gen:cpu.getGeneros()) {</span>
+<span class="fc bfc" id="L616" title="All 2 branches covered.">            if (gen.getPadre()== &quot;Genero&quot;){</span>
+<span class="fc" id="L617">                dtg.add(gen.getNombre());</span>
+            }
+<span class="fc" id="L619">        }</span>
+<span class="fc" id="L620">        return dtg;</span>
+    }
+    
+    
+   //Listas de Reproduccion
+    public boolean encontrarLista(String nom){
+<span class="fc" id="L626">        List&lt;ListaReproduccion&gt; lr = cpu.listaListas();</span>
+<span class="fc" id="L627">        boolean control = false;</span>
+<span class="fc bfc" id="L628" title="All 2 branches covered.">        for(ListaReproduccion dt:lr){</span>
+<span class="fc bfc" id="L629" title="All 2 branches covered.">            if(dt.getNombre() == nom){</span>
+<span class="fc" id="L630">                control = true;</span>
+            }
+<span class="fc" id="L632">        }</span>
+<span class="fc" id="L633">        return control;</span>
+    }
+    
+    public void altaListaPart(DataLista dtl) throws ListaRepetidaException {
+<span class="fc bfc" id="L637" title="All 2 branches covered.">        if (encontrarLista(dtl.getNombre())) {</span>
+<span class="fc" id="L638">            throw new ListaRepetidaException(&quot;Ya existe un Lista con ese nombre, por favor corrijalo para continuar.&quot;);</span>
+        } else {
+<span class="fc" id="L640">            ListaParticular lp = new ListaParticular(dtl.getNombre(), dtl.getImagen(), dtl.getExtra());</span>
+<span class="fc" id="L641">            cpu.crearListarPar(lp);</span>
+<span class="fc" id="L642">            Cliente cliente_elegido = cpu.obtenerCliente(dtl.getExtra());</span>
+<span class="fc" id="L643">            cliente_elegido.agrgarListaAListasCreadas(lp);</span>
+<span class="fc" id="L644">            cpu.actualizarUsuario(cliente_elegido);</span>
+            
+        }
+<span class="fc" id="L647">    }</span>
+
+    public void altaListaDef(DataLista dtl) throws ListaRepetidaException {
+<span class="fc bfc" id="L650" title="All 2 branches covered.">        if (encontrarLista(dtl.getNombre())) {</span>
+<span class="fc" id="L651">            throw new ListaRepetidaException(&quot;Ya existe un Lista con ese nombre, por favor corrijalo para continuar.&quot;);</span>
+        } else {
+<span class="fc" id="L653">            ListaPorDefecto lp = new ListaPorDefecto(dtl.getNombre(), dtl.getImagen(), dtl.getExtra());</span>
+<span class="fc" id="L654">            lp.setGenero(dtl.getExtra());</span>
+<span class="fc" id="L655">            cpu.crearListaDef(lp);</span>
+        }
+<span class="fc" id="L657">    }</span>
+    
+    public Set&lt;String&gt; listarListas(){
+<span class="fc" id="L660">        Set&lt;String&gt; sl = new HashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L661" title="All 2 branches covered.">        for(ListaReproduccion lr: cpu.listaListas()){</span>
+<span class="fc" id="L662">            sl.add(lr.getNombre());</span>
+<span class="fc" id="L663">        }</span>
+<span class="fc" id="L664">        return sl;</span>
+    }
+    
+    public Set&lt;String&gt; listarListasPar(){
+<span class="fc" id="L668">        Set&lt;String&gt; sl = new HashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L669" title="All 2 branches covered.">        for(ListaReproduccion lr: cpu.listaListas()){</span>
+<span class="fc bfc" id="L670" title="All 2 branches covered.">            if(lr instanceof ListaParticular){</span>
+<span class="fc" id="L671">                sl.add(lr.getNombre());</span>
+            }
+<span class="fc" id="L673">        }</span>
+<span class="fc" id="L674">        return sl;</span>
+    }
+    
+    public Set&lt;String&gt; listarListasDef(){
+<span class="fc" id="L678">        Set&lt;String&gt; sl = new HashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L679" title="All 2 branches covered.">        for(ListaReproduccion lr: cpu.listaListas()){</span>
+<span class="fc bfc" id="L680" title="All 2 branches covered.">            if(lr instanceof ListaPorDefecto){</span>
+<span class="fc" id="L681">                sl.add(lr.getNombre());</span>
+            }
+<span class="fc" id="L683">        }</span>
+<span class="fc" id="L684">        return sl;</span>
+    }
+    
+    public DataLista darLista(int nom){
+<span class="fc" id="L688">        DataLista dl = null;</span>
+<span class="fc bfc" id="L689" title="All 2 branches covered.">        if(cpu.findLista(nom) instanceof ListaPorDefecto){</span>
+<span class="fc" id="L690">            ListaPorDefecto lr =(ListaPorDefecto)cpu.findLista(nom);</span>
+<span class="fc" id="L691">            dl = new DataLista(lr);</span>
+<span class="fc" id="L692">        }else{</span>
+<span class="fc" id="L693">            ListaParticular lr = (ListaParticular) cpu.findLista(nom);</span>
+<span class="fc" id="L694">            dl = new DataLista(lr);</span>
+        }
+<span class="fc" id="L696">        return dl;</span>
+    }
+    
+    public boolean tipoLista(int id){
+<span class="fc bfc" id="L700" title="All 2 branches covered.">        if(cpu.findLista(id) instanceof ListaParticular){</span>
+<span class="fc" id="L701">            return true;</span>
+<span class="fc" id="L702">        } else{ return false; }</span>
+    }
+
+    public List&lt;DataLista&gt; traerListasParticularesPorClientes(String nickname) {
+<span class="fc" id="L706">        List&lt;ListaParticular&gt; lp = cpu.traerListasParticularesPorCliente(nickname);</span>
+<span class="fc" id="L707">        List&lt;DataLista&gt; DTListasP = new ArrayList();</span>
+<span class="fc bfc" id="L708" title="All 2 branches covered.">        for(ListaParticular lp2: lp){</span>
+<span class="fc" id="L709">            DTListasP.add(new DataLista(lp2));</span>
+<span class="fc" id="L710">        }</span>
+<span class="fc" id="L711">        return DTListasP;</span>
+
+    }
+    
+    public List&lt;DataLista&gt; traerListasDefectoPorGenero(String genero){
+<span class="fc" id="L716">        List&lt;ListaPorDefecto&gt; ld = cpu.traerListasPorDefectoPorGenero(genero);</span>
+<span class="fc" id="L717">        List&lt;DataLista&gt; DTListasD = new ArrayList();</span>
+<span class="fc bfc" id="L718" title="All 2 branches covered.">        for(ListaPorDefecto lp2: ld){</span>
+<span class="fc" id="L719">            DTListasD.add(new DataLista(lp2));</span>
+<span class="fc" id="L720">        }</span>
+<span class="fc" id="L721">        return DTListasD;</span>
+    }
+
+    public ListaParticular traerListaParticularPorId(int id) {
+<span class="fc" id="L725">        return cpu.traerListaParticularPorId(id);</span>
+    }
+    
+    public ListaParticular traerListaParticularPorCliente(String nombre, String nickname) {
+<span class="fc" id="L729">        List&lt;ListaParticular&gt; lp = cpu.traerListasParticularesPorCliente(nickname);</span>
+<span class="fc" id="L730">        List&lt;DataLista&gt; DTListasP = new ArrayList();</span>
+<span class="fc" id="L731">        ListaParticular list = null;</span>
+<span class="fc bfc" id="L732" title="All 2 branches covered.">        for(ListaParticular lp2: lp){</span>
+<span class="fc bfc" id="L733" title="All 2 branches covered.">            if(lp2.getNombre().equals(nombre)){</span>
+<span class="fc" id="L734">                list = lp2;</span>
+            }
+<span class="fc" id="L736">        }</span>
+<span class="fc" id="L737">        return list;</span>
+    }
+
+
+    public void modificarListaParticularPorId(int listaId) {
+<span class="fc" id="L742">        ListaParticular listaP = cpu.traerListaParticularPorId(listaId);</span>
+
+<span class="fc" id="L744">        listaP.setPublica(true);</span>
+
+<span class="fc" id="L746">        cpu.modificarListaParticular(listaP);</span>
+
+<span class="fc" id="L748">    }</span>
+    
+      
+      public List&lt;String&gt; traerNickNamesClientes(){
+          
+<span class="fc" id="L753">          List&lt;Usuario&gt; listaUsers = cpu.traerUsuariosClientes();</span>
+<span class="fc" id="L754">          List&lt;String&gt; nickClientes= new ArrayList();</span>
+<span class="fc bfc" id="L755" title="All 2 branches covered.">          for(Usuario user: listaUsers){</span>
+<span class="fc" id="L756">              nickClientes.add(user.getNickname());</span>
+<span class="fc" id="L757">          }</span>
+<span class="fc" id="L758">          return nickClientes;</span>
+      }
+      
+      /*public List&lt;ListaParticular&gt; traerListasParticularesPorClientes(String nickname){
+          return cpu.traerListasParticularesPorCliente(nickname);
+      }*/
+      
+
+    //brian
+     
+   public ArrayList Nicknames_De_Clientes(){
+<span class="fc" id="L769">        List&lt;Cliente&gt; traigo = cpu.obtenerTodosLosClientes();</span>
+<span class="fc" id="L770">        ArrayList&lt;Cliente&gt; meto = new ArrayList&lt;Cliente&gt;(traigo);</span>
+<span class="fc" id="L771">        ArrayList&lt;String&gt; cambio = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L772" title="All 2 branches covered.">        for (int i = 0; i &lt; meto.size(); i++) {</span>
+<span class="fc" id="L773">            cambio.add(meto.get(i).getNickname());</span>
+    }
+<span class="fc" id="L775">        return cambio;</span>
+    }
+    public ArrayList Listar_Usuarios_A_Seguir(String cliente_seleccionado){
+<span class="fc" id="L778">        List&lt;Usuario&gt; traigo = cpu.getUsuarios();</span>
+<span class="fc" id="L779">        Cliente cliente_seguidor = cpu.obtenerCliente(cliente_seleccionado);</span>
+        
+<span class="fc" id="L781">        ArrayList&lt;Usuario&gt; seguidos = cliente_seguidor.getUsuariosSiguiendo();</span>
+<span class="fc" id="L782">        ArrayList&lt;String&gt; cambio2 = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L783" title="All 2 branches covered.">        for (int i = 0; i &lt; seguidos.size(); i++) {</span>
+<span class="fc" id="L784">            cambio2.add(seguidos.get(i).getNickname());</span>
+    }
+       
+<span class="fc" id="L787">        ArrayList&lt;Usuario&gt; meto = new ArrayList&lt;Usuario&gt;(traigo);</span>
+<span class="fc" id="L788">        ArrayList&lt;String&gt; cambio = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L789" title="All 2 branches covered.">        for (int i = 0; i &lt; meto.size(); i++) {</span>
+<span class="fc" id="L790">            cambio.add(meto.get(i).getNickname());</span>
+    }
+<span class="fc bfc" id="L792" title="All 2 branches covered.">        for (int i = 0; i &lt; cambio2.size(); i++) {</span>
+<span class="fc" id="L793">            cambio.remove(cambio2.get(i));</span>
+    }
+        //cambio.remove(nickname);
+        
+<span class="fc" id="L797">        return cambio;</span>
+    }
+    
+    public  void Seguir_Usuario(String cliente_seleccionado, String nickname_usuario){
+<span class="fc" id="L801">         Usuario usuario_A_Seguir = cpu.obtenerUsuario(nickname_usuario);</span>
+<span class="fc" id="L802">       Cliente cliente_Que_Sigue = cpu.obtenerCliente(cliente_seleccionado);</span>
+<span class="fc" id="L803">       cliente_Que_Sigue.getUsuariosSiguiendo().add(usuario_A_Seguir);</span>
+<span class="fc" id="L804">       cpu.actualizarUsuario(cliente_Que_Sigue);</span>
+<span class="fc" id="L805">    }</span>
+
+    public ArrayList&lt;String&gt; Listar_Usuarios_A_DEJAR_DE_Seguir(String cliente_seleccionado){
+<span class="fc" id="L808">       Cliente cliente_elegido = cpu.obtenerCliente(cliente_seleccionado);</span>
+<span class="fc" id="L809">       ArrayList&lt;Usuario&gt; usuarios = cliente_elegido.getUsuariosSiguiendo();</span>
+<span class="fc" id="L810">       ArrayList&lt;String&gt; usuarios_string = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L811" title="All 2 branches covered.">       for(int i= 0; i &lt; usuarios.size();i++){</span>
+<span class="fc" id="L812">           usuarios_string.add(usuarios.get(i).getNickname());</span>
+       }
+       
+<span class="fc" id="L815">       return usuarios_string;</span>
+    }
+    
+    public void Dejar_De_Seguir_Usuario(String cliente, String usuario){
+<span class="fc" id="L819">        Cliente cliente_elegido = cpu.obtenerCliente(cliente);</span>
+<span class="fc" id="L820">        Usuario usuario_elegido = cpu.obtenerUsuario(usuario);</span>
+<span class="fc" id="L821">        String nombre_usuario = usuario_elegido.getNickname();</span>
+<span class="fc bfc" id="L822" title="All 2 branches covered.">        for(int i = 0; i &lt; cliente_elegido.getUsuariosSiguiendo().size(); i++){</span>
+<span class="fc bfc" id="L823" title="All 2 branches covered.">           if( cliente_elegido.getUsuariosSiguiendo().get(i).getNickname() == nombre_usuario){</span>
+<span class="fc" id="L824">               cliente_elegido.getUsuariosSiguiendo().remove(i);</span>
+           }
+        }
+       
+<span class="fc" id="L828">        cpu.actualizarUsuario(cliente_elegido);</span>
+<span class="fc" id="L829">    }</span>
+    
+    public ArrayList&lt;String&gt; Listar_Temas_A_Seguir(String cliente_seleccionado){
+<span class="fc" id="L832">        Cliente cliente_elegido = cpu.obtenerCliente(cliente_seleccionado);</span>
+<span class="fc" id="L833">       ArrayList&lt;Tema&gt; a_cambiar_objeto = cliente_elegido.getTemasFavoritos();</span>
+<span class="fc" id="L834">       ArrayList&lt;String&gt; a_mostrar = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L835">       List&lt;Tema&gt; temas = cpu.Listar_Temas();</span>
+<span class="fc bfc" id="L836" title="All 2 branches covered.">       for(int i = 0; i &lt; temas.size();i++){</span>
+<span class="fc" id="L837">           String albumConId = temas.get(i).getNombre() + &quot; &quot; + temas.get(i).getId();</span>
+<span class="fc" id="L838">           a_mostrar.add(albumConId);</span>
+          //System.out.println(a_mostrar.get(i).substring(0,a_mostrar.get(i).length() - 1));
+       }
+
+
+<span class="fc bfc" id="L843" title="All 2 branches covered.">       for (Tema favorito : a_cambiar_objeto) {</span>
+<span class="fc" id="L844">        String albumConId = favorito.getNombre() + &quot; &quot; + favorito.getId();</span>
+
+        // Si el álbum está en a_mostrar, eliminarlo
+<span class="fc bfc" id="L847" title="All 2 branches covered.">        if (a_mostrar.contains(albumConId)) {</span>
+<span class="fc" id="L848">            a_mostrar.remove(albumConId);</span>
+        } else {
+<span class="fc" id="L850">            System.out.println(&quot;No borra: &quot; + albumConId);</span>
+        }
+<span class="fc" id="L852">    }</span>
+<span class="fc" id="L853">       return a_mostrar;</span>
+    }
+    
+    public void Seguir_TEMA(String cliente_seleccionado, String tema_seleccionado){
+<span class="fc" id="L857">       Cliente cliente_elegido = cpu.obtenerCliente(cliente_seleccionado);</span>
+<span class="fc" id="L858">        List&lt;Tema&gt; albumes = cpu.Listar_Temas();</span>
+<span class="fc" id="L859">        List&lt;Tema&gt; a_seguir = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L861" title="All 2 branches covered.">        for(int i = 0 ; i &lt; albumes.size(); i++){</span>
+<span class="fc" id="L862">            String albumConId = albumes.get(i).getNombre() + &quot; &quot; + albumes.get(i).getId();</span>
+<span class="fc" id="L863">            System.out.println(&quot;Comparando con: &quot; + albumConId); // Debug</span>
+<span class="fc bfc" id="L864" title="All 2 branches covered.">            if (albumConId.equals(tema_seleccionado)) {</span>
+<span class="fc" id="L865">                a_seguir.add(albumes.get(i));</span>
+            }
+        }
+
+<span class="fc bfc" id="L869" title="All 2 branches covered.">        for(int i = 0; i &lt; a_seguir.size(); i++){</span>
+<span class="fc" id="L870">        cliente_elegido.getTemasFavoritos().add(a_seguir.get(i));</span>
+
+        }
+<span class="fc" id="L873">        cpu.actualizarUsuario(cliente_elegido);</span>
+<span class="fc" id="L874">    }</span>
+    public ArrayList&lt;String&gt; Listar_Albumes_A_Seguir(String cliente_seleccionado){
+<span class="fc" id="L876">      Cliente cliente_elegido = cpu.obtenerCliente(cliente_seleccionado);</span>
+<span class="fc" id="L877">       ArrayList&lt;Album&gt; a_cambiar_objeto = cliente_elegido.getAlbumesFavoritos();</span>
+<span class="fc" id="L878">       ArrayList&lt;String&gt; a_mostrar = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L879">       List&lt;Album&gt; albumes = cpu.Listar_Albumes();</span>
+<span class="fc bfc" id="L880" title="All 2 branches covered.">       for(int i = 0; i &lt; albumes.size();i++){</span>
+<span class="fc" id="L881">           String albumConId = albumes.get(i).getNombre() + &quot; &quot; + albumes.get(i).getId();</span>
+<span class="fc" id="L882">           a_mostrar.add(albumConId);</span>
+          //System.out.println(a_mostrar.get(i).substring(0,a_mostrar.get(i).length() - 1));
+       }
+
+
+<span class="fc bfc" id="L887" title="All 2 branches covered.">       for (Album favorito : a_cambiar_objeto) {</span>
+<span class="fc" id="L888">        String albumConId = favorito.getNombre() + &quot; &quot; + favorito.getId();</span>
+
+        // Si el álbum está en a_mostrar, eliminarlo
+<span class="fc bfc" id="L891" title="All 2 branches covered.">        if (a_mostrar.contains(albumConId)) {</span>
+<span class="fc" id="L892">            a_mostrar.remove(albumConId);</span>
+        } else {
+<span class="fc" id="L894">            System.out.println(&quot;No borra: &quot; + albumConId);</span>
+        }
+<span class="fc" id="L896">    }</span>
+<span class="fc" id="L897">       return a_mostrar;</span>
+    }
+    
+    public void Seguir_ALBUM(String cliente_seleccionado,String album_seleccionado){
+<span class="fc" id="L901">       Cliente cliente_elegido = cpu.obtenerCliente(cliente_seleccionado);</span>
+<span class="fc" id="L902">        List&lt;Album&gt; albumes = cpu.Listar_Albumes();</span>
+<span class="fc" id="L903">        List&lt;Album&gt; a_seguir = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L905" title="All 2 branches covered.">        for(int i = 0 ; i &lt; albumes.size(); i++){</span>
+<span class="fc" id="L906">            String albumConId = albumes.get(i).getNombre() + &quot; &quot; + albumes.get(i).getId();</span>
+<span class="fc" id="L907">            System.out.println(&quot;Comparando con: &quot; + albumConId); // Debug</span>
+<span class="fc bfc" id="L908" title="All 2 branches covered.">            if (albumConId.equals(album_seleccionado)) {</span>
+<span class="fc" id="L909">                a_seguir.add(albumes.get(i));</span>
+            }
+        }
+
+<span class="fc bfc" id="L913" title="All 2 branches covered.">        for(int i = 0; i &lt; a_seguir.size(); i++){</span>
+<span class="fc" id="L914">        cliente_elegido.getAlbumesFavoritos().add(a_seguir.get(i));</span>
+
+        }
+<span class="fc" id="L917">        cpu.actualizarUsuario(cliente_elegido);</span>
+<span class="fc" id="L918">    }</span>
+    
+    public ArrayList&lt;String&gt; Listar_Listas_A_Seguir(String cliente_seleccionado){
+<span class="fc" id="L921">         Cliente cliente_elegido = cpu.obtenerCliente(cliente_seleccionado);</span>
+<span class="fc" id="L922">         ArrayList&lt;ListaReproduccion&gt; a_cambiar_objeto = cliente_elegido.getListasFavoritas();</span>
+<span class="fc" id="L923">       ArrayList&lt;String&gt; a_mostrar = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L924">       List&lt;ListaReproduccion&gt; listas_particulares = cpu.listaListas();</span>
+<span class="fc bfc" id="L925" title="All 2 branches covered.">       for(int i = 0; i &lt; listas_particulares.size();i++){</span>
+<span class="fc bfc" id="L926" title="All 2 branches covered.">           if(listas_particulares.get(i) instanceof ListaParticular){</span>
+<span class="fc" id="L927">               ListaParticular lista = (ListaParticular) listas_particulares.get(i);</span>
+<span class="fc bfc" id="L928" title="All 2 branches covered.">             if (lista.isPublica()) {</span>
+<span class="fc" id="L929">                  String albumConId = listas_particulares.get(i).getNombre() + &quot; &quot; + listas_particulares.get(i).getId();</span>
+<span class="fc" id="L930">                   a_mostrar.add(albumConId);</span>
+             }
+<span class="fc" id="L932">           }else{</span>
+<span class="fc" id="L933">            String albumConId = listas_particulares.get(i).getNombre() + &quot; &quot; + listas_particulares.get(i).getId();</span>
+<span class="fc" id="L934">            a_mostrar.add(albumConId);</span>
+              
+           }
+           }
+       
+<span class="fc bfc" id="L939" title="All 2 branches covered.">         for (ListaReproduccion favorito : a_cambiar_objeto) {</span>
+<span class="fc" id="L940">        String albumConId = favorito.getNombre() + &quot; &quot; + favorito.getId();</span>
+
+        // Si el álbum está en a_mostrar, eliminarlo
+<span class="fc bfc" id="L943" title="All 2 branches covered.">        if (a_mostrar.contains(albumConId)) {</span>
+<span class="fc" id="L944">            a_mostrar.remove(albumConId);</span>
+        } else {
+<span class="fc" id="L946">            System.out.println(&quot;No borra: &quot; + albumConId);</span>
+        }
+<span class="fc" id="L948">    }</span>
+<span class="fc" id="L949">       return a_mostrar;</span>
+    }
+    public void Seguir_LISTA(String cliente_seleccionado, String lista_seleccionada){
+<span class="fc" id="L952">        Cliente cliente_elegido = cpu.obtenerCliente(cliente_seleccionado);</span>
+<span class="fc" id="L953">        List&lt;ListaReproduccion&gt; listas = cpu.listaListas();</span>
+<span class="fc" id="L954">        List&lt;ListaReproduccion&gt; a_seguir = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L956" title="All 2 branches covered.">        for(int i = 0 ; i &lt; listas.size(); i++){</span>
+<span class="fc" id="L957">            String albumConId = listas.get(i).getNombre() + &quot; &quot; + listas.get(i).getId();</span>
+<span class="fc" id="L958">            System.out.println(&quot;Comparando con: &quot; + albumConId); // Debug</span>
+<span class="fc bfc" id="L959" title="All 2 branches covered.">            if (albumConId.equals(lista_seleccionada)) {</span>
+<span class="fc" id="L960">                a_seguir.add(listas.get(i));</span>
+            }
+        }
+<span class="fc bfc" id="L963" title="All 2 branches covered.">        for(int i = 0; i &lt; a_seguir.size(); i++){</span>
+<span class="fc" id="L964">        cliente_elegido.getListasFavoritas().add(a_seguir.get(i));</span>
+
+        }
+<span class="fc" id="L967">        cpu.actualizarUsuario(cliente_elegido);</span>
+<span class="fc" id="L968">    }</span>
+    
+    public DataLista traerListaDefGeneroNombre(String genero, String nombre){
+<span class="fc" id="L971">        List&lt;ListaPorDefecto&gt; dtl = cpu.traerListasPorDefectoPorGenero(genero);</span>
+<span class="fc" id="L972">        DataLista dl = null; </span>
+<span class="fc bfc" id="L973" title="All 2 branches covered.">        for(ListaPorDefecto ld:dtl){</span>
+<span class="fc bfc" id="L974" title="All 2 branches covered.">            if(ld.getNombre().equals(nombre)){</span>
+<span class="fc" id="L975">                dl = new DataLista(ld);</span>
+            }
+<span class="fc" id="L977">        }</span>
+<span class="fc" id="L978">        return dl;</span>
+    }
+    
+    public DataLista traerListaPartClienteNombre(String cliente, String nombre){
+<span class="fc" id="L982">        List&lt;ListaParticular&gt; dtl = cpu.traerListasParticularesPorCliente(cliente);</span>
+<span class="fc" id="L983">        DataLista dl = null;</span>
+<span class="fc bfc" id="L984" title="All 2 branches covered.">        for(ListaParticular lp:dtl){</span>
+<span class="fc bfc" id="L985" title="All 2 branches covered.">            if(lp.getNombre().equals(nombre)){</span>
+<span class="fc" id="L986">                dl = new DataLista(lp);</span>
+            }
+<span class="fc" id="L988">        }</span>
+<span class="fc" id="L989">        return dl;</span>
+    }
+    
+    public List&lt;DataLista&gt; traerListasPublicasTodas(){
+<span class="fc" id="L993">        List&lt;DataLista&gt; dtl= new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L994" title="All 2 branches covered.">        for(DataLista s:traerListasParticularesPublicas()){</span>
+<span class="fc" id="L995">            dtl.add(s);</span>
+<span class="fc" id="L996">        }</span>
+<span class="fc" id="L997">        return dtl;</span>
+    }
+    
+    public List&lt;DataSub&gt; listarSubsPendientes(){
+<span class="nc" id="L1001">        List&lt;DataSub&gt; dts = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L1002" title="All 2 branches missed.">        for(Usuario c:cpu.traerUsuariosClientes()){</span>
+<span class="nc bnc" id="L1003" title="All 2 branches missed.">            if(c instanceof Cliente){</span>
+<span class="nc bnc" id="L1004" title="All 2 branches missed.">                if(((Cliente) c).getSub()!=null){</span>
+<span class="nc bnc" id="L1005" title="All 2 branches missed.">                    if(((Cliente) c).getSub().getEstado()==&quot;Pendiente&quot;){</span>
+<span class="nc" id="L1006">                        dts.add(new DataSub(((Cliente) c).getSub()));</span>
+                    }
+                }
+            }
+<span class="nc" id="L1010">        }</span>
+<span class="nc" id="L1011">        return dts;</span>
+    }
+    
+    public List&lt;String&gt; listarUsuarioSubsPendientes(){
+<span class="nc" id="L1015">        List&lt;String&gt; nicks = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L1016" title="All 2 branches missed.">        for(Cliente c: cpu.obtenerTodosLosClientes()){</span>
+<span class="nc bnc" id="L1017" title="All 2 branches missed.">            if(c.getSub()!=null){</span>
+<span class="nc bnc" id="L1018" title="All 2 branches missed.">                if(c.getSub().getEstado().equals(&quot;Pendiente&quot;)){</span>
+<span class="nc" id="L1019">                    nicks.add(c.getNickname());</span>
+                }
+            }
+<span class="nc" id="L1022">        }</span>
+<span class="nc" id="L1023">        return nicks;</span>
+    }
+    
+    public DataSub darSubUsuario(String nick){
+<span class="fc" id="L1027">        Cliente cli = cpu.obtenerCliente(nick);</span>
+<span class="fc" id="L1028">        DataSub dt = new DataSub(cli.getSub());</span>
+<span class="fc" id="L1029">        return dt;</span>
+    }
+    
+    public void altaSubscripcion (String nick, String tipo){
+<span class="fc" id="L1033">        Cliente cli = cpu.obtenerCliente(nick);</span>
+<span class="fc" id="L1034">        Subscripcion sub = new Subscripcion ();</span>
+<span class="fc" id="L1035">        sub.setCli(cli);</span>
+<span class="fc" id="L1036">        sub.setTipo(tipo);</span>
+        //actualizar
+<span class="fc bfc" id="L1038" title="All 2 branches covered.">        if(cli.getSub()==null){</span>
+<span class="fc" id="L1039">            cpu.crearSub(sub);</span>
+        } else { 
+            try { 
+<span class="fc" id="L1042">                cpu.actualizarSub(sub);</span>
+<span class="nc" id="L1043">            } catch (Exception ex) {</span>
+<span class="nc" id="L1044">                Logger.getLogger(Sistema.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="fc" id="L1045">            }</span>
+        }
+<span class="fc" id="L1047">        cli.setSub(sub);</span>
+<span class="fc" id="L1048">        cpu.actualizarUsuario(cli);</span>
+<span class="fc" id="L1049">    }</span>
+    
+    public void cambioEstadoSubscripcion(String nick, String estado){
+<span class="fc" id="L1052">        Cliente cli = cpu.obtenerCliente(nick);</span>
+<span class="fc" id="L1053">        Subscripcion sub = cli.getSub();</span>
+<span class="fc bfc" id="L1054" title="All 2 branches covered.">        if (sub == null) {</span>
+<span class="fc" id="L1055">            return;</span>
+        }   
+        
+<span class="fc" id="L1058">        sub.setEstado(estado);</span>
+        try {
+<span class="fc" id="L1060">            cpu.actualizarSub(sub);</span>
+<span class="nc" id="L1061">        } catch (Exception ex) {</span>
+<span class="nc" id="L1062">            Logger.getLogger(Sistema.class.getName()).log(Level.SEVERE, null, ex);</span>
+            
+<span class="fc" id="L1064">        }</span>
+<span class="fc" id="L1065">        cli.setSub(sub);</span>
+<span class="fc" id="L1066">        cpu.actualizarUsuario(cli);</span>
+<span class="fc" id="L1067">    }</span>
+ 
+     //probando 
+//   public List&lt;String&gt; traerGeneros(){
+//       List&lt;Genero&gt; generos = cpu.traerTodosGeneros();
+//       List&lt;String&gt; generos_string = new ArrayList&lt;&gt;();
+//       for(int i = 0; i &lt; generos.size();i++){
+//           generos_string.add(generos.get(i).getNombre());
+//           System.out.println(generos.get(i).getNombre());
+//       }
+//       return generos_string;
+//   }
+//   public List&lt;String&gt; traerArtistas(){
+//       List&lt;Artista&gt; artistas = cpu.obtenerTodosLosArtistas();
+//       List&lt;String&gt; generos_string = new ArrayList&lt;&gt;();
+//       for(int i = 0; i &lt; artistas.size();i++){
+//           generos_string.add(artistas.get(i).getNombre());
+//           System.out.println(artistas.get(i).getNombre());
+//       }
+//       return generos_string;
+//   } 
+//   public List&lt;String&gt; traerAlbumesGenero(String genero){
+//    
+//        List&lt;Album&gt; albumes = (List&lt;Album&gt;) cpu.obtenerGenero(genero).getAlbumes();
+//        List&lt;String&gt; albumes_string = new ArrayList&lt;&gt;();
+//        for(int i = 0; i &lt; albumes.size();i++){
+//            albumes_string.add(albumes.get(i).getNombre());
+//        }
+//        return albumes_string;
+//   }
+   
+   public List&lt;String&gt; traerAlbumesArtista(String artista){
+<span class="fc" id="L1099">       Artista art = (Artista) cpu.obtenerUsuario(artista);</span>
+<span class="fc" id="L1100">       List&lt;Album&gt; albumes = (List&lt;Album&gt;) cpu.getAlbumesArt(art);</span>
+<span class="fc" id="L1101">        List&lt;String&gt; albumes_string = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L1102" title="All 2 branches covered.">        for(int i = 0; i &lt; albumes.size();i++){</span>
+<span class="fc" id="L1103">            albumes_string.add(albumes.get(i).getNombre());</span>
+        }
+<span class="fc" id="L1105">        return albumes_string;</span>
+   }
+   
+   public Vector&lt;DataAlbum&gt; traerAlbumes(){
+        Vector&lt;String&gt; listaAlbumes;
+<span class="fc" id="L1110">        List&lt;Album&gt; traerAlbumes= cpu.Listar_Albumes();</span>
+<span class="fc" id="L1111">        Vector&lt;DataAlbum&gt; dtAlbumes= new Vector&lt;&gt;();</span>
+        
+<span class="fc bfc" id="L1113" title="All 2 branches covered.">        for(Album album : traerAlbumes){</span>
+<span class="fc" id="L1114">            dtAlbumes.add(album.getDataAlbum());</span>
+            // public DataAlbum(String nombre, Integer fechaCreacion, String imagen, Collection&lt;DataTema&gt; temas, Collection&lt;String&gt; generos)
+<span class="fc" id="L1116">        }</span>
+<span class="fc" id="L1117">        return dtAlbumes;</span>
+    }
+   
+    public List&lt;DataTema&gt; traerTemasPorIdAlbum(Long id){
+<span class="fc" id="L1121">        List&lt;Tema&gt; listaTemasAlbum= cpu.traerTemasPorIdAlbum(id);</span>
+<span class="fc" id="L1122">        List&lt;DataTema&gt; DTListaAlbum = new ArrayList();</span>
+
+<span class="fc bfc" id="L1124" title="All 2 branches covered.">        for(Tema t1: listaTemasAlbum){</span>
+<span class="fc" id="L1125">            DTListaAlbum.add(t1.getDataTemaI());</span>
+<span class="fc" id="L1126">        }</span>
+
+<span class="fc" id="L1128">        return DTListaAlbum;</span>
+    }
+    
+    public void agregarTemaLista(int idLista, Long idTema){ // para modificar
+          
+<span class="fc" id="L1133">          ListaReproduccion listaR = new ListaReproduccion();</span>
+<span class="fc" id="L1134">          listaR=cpu.traerListaParticularPorId(idLista);</span>
+<span class="fc bfc" id="L1135" title="All 2 branches covered.">          if(listaR==null){</span>
+<span class="fc" id="L1136">              listaR=cpu.traerListaPorDefectoPorId(idLista);</span>
+          }
+          
+<span class="fc" id="L1139">          Tema nuevoTema = new Tema();</span>
+          
+<span class="fc" id="L1141">          nuevoTema=cpu.traerTemaPorId((Long)idTema);</span>
+          
+<span class="fc" id="L1143">          listaR.agregarTema(nuevoTema);</span>
+          
+        try {
+<span class="fc" id="L1146">            cpu.editarListaReproduccion(listaR);</span>
+<span class="fc" id="L1147">        } catch (Exception ex) {</span>
+<span class="fc" id="L1148">            Logger.getLogger(Sistema.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="fc" id="L1149">        }</span>
+           
+<span class="fc" id="L1151">      }</span>
+    
+    public Vector&lt;DataLista&gt; traerListasParticularesPublicas(){
+<span class="fc" id="L1154">          List&lt;ListaParticular&gt; listasP = cpu.traerListasParticularesPublicas();</span>
+<span class="fc" id="L1155">          Vector&lt;DataLista&gt; DTListas = new Vector&lt;&gt;();</span>
+          
+<span class="fc bfc" id="L1157" title="All 2 branches covered.">          for(ListaParticular lp : listasP){</span>
+<span class="fc" id="L1158">              DataLista dtLista = new DataLista(lp);</span>
+<span class="fc" id="L1159">              DTListas.add(dtLista);</span>
+<span class="fc" id="L1160">          }</span>
+          
+<span class="fc" id="L1162">          return DTListas;</span>
+      }
+      
+      public List&lt;DataTema&gt; traerTemasPorIdListaReproduccion(int id){
+<span class="fc" id="L1166">          Set&lt;Tema&gt; listaTemas = cpu.traerTemasPorIdListaReproduccion(id);</span>
+<span class="fc" id="L1167">          List&lt;DataTema&gt; DTTemas = new ArrayList();</span>
+          
+<span class="fc bfc" id="L1169" title="All 2 branches covered.">          for(Tema t1:listaTemas){</span>
+<span class="fc" id="L1170">              DTTemas.add(t1.getDataTemaI());</span>
+<span class="fc" id="L1171">          }</span>
+          
+<span class="fc" id="L1173">          return DTTemas;</span>
+      }
+      
+      public List&lt;DataLista&gt; traerListasPorDefecto(){
+<span class="fc" id="L1177">          List&lt;ListaPorDefecto&gt; listasPorDefecto= cpu.Listar_Listas_Por_Defecto();</span>
+<span class="fc" id="L1178">          List&lt;DataLista&gt; DTListaDefecto = new ArrayList();</span>
+          
+<span class="fc bfc" id="L1180" title="All 2 branches covered.">          for(ListaPorDefecto l1: listasPorDefecto){</span>
+<span class="fc" id="L1181">              DataLista dtListaDef = new DataLista(l1);</span>
+              
+<span class="fc" id="L1183">              DTListaDefecto.add(dtListaDef);</span>
+<span class="fc" id="L1184">          }</span>
+         
+<span class="fc" id="L1186">          return DTListaDefecto;</span>
+      }
+      
+      public ListaPorDefecto traerListaPorDefecto(String nombre){
+<span class="fc" id="L1190">          List&lt;ListaPorDefecto&gt; listasPorDefecto = cpu.Listar_Listas_Por_Defecto();</span>
+<span class="fc" id="L1191">          ListaPorDefecto l = null;</span>
+          
+<span class="fc bfc" id="L1193" title="All 2 branches covered.">          for(ListaPorDefecto li: listasPorDefecto){</span>
+<span class="fc bfc" id="L1194" title="All 2 branches covered.">              if (li.getNombre().equals(nombre)){</span>
+<span class="fc" id="L1195">                  l = li;</span>
+              }
+<span class="fc" id="L1197">          }</span>
+         
+<span class="fc" id="L1199">          return l;</span>
+      }
+      
+      public List&lt;DataTema&gt; traerTemasPorListasPorDefectoId(int listaid){
+          
+<span class="fc" id="L1204">          ListaPorDefecto listaDefecto = cpu.traerListaPorDefectoPorId(listaid);</span>
+          
+<span class="fc" id="L1206">          List&lt;DataTema&gt; DTListasTemas= new ArrayList();</span>
+          
+<span class="fc" id="L1208">          Set &lt;Tema&gt;listaTemas= listaDefecto.getListaTemas();</span>
+          
+<span class="fc bfc" id="L1210" title="All 2 branches covered.">          for(Tema t: listaTemas){</span>
+<span class="fc" id="L1211">              DTListasTemas.add(t.getDataTemaI());</span>
+<span class="fc" id="L1212">          }</span>
+          
+<span class="fc" id="L1214">          return DTListasTemas;</span>
+          
+      }
+      
+      public List&lt;DataLista&gt; traerListasFavoritasPorIdCliente(String nickname){
+<span class="fc" id="L1219">          Cliente cliente = cpu.obtenerCliente(nickname);</span>
+<span class="fc" id="L1220">          List&lt;DataLista&gt; DTListasFav = new ArrayList();</span>
+<span class="fc" id="L1221">          List&lt;ListaReproduccion&gt; listasFavoritas = cliente.getListasFavoritas();</span>
+          
+          
+<span class="fc bfc" id="L1224" title="All 2 branches covered.">          for(ListaReproduccion list:listasFavoritas){</span>
+<span class="fc" id="L1225">             DataLista dtL = new DataLista();</span>
+<span class="fc" id="L1226">             dtL.setId(list.getId());</span>
+<span class="fc" id="L1227">             dtL.setNombre(list.getNombre());</span>
+<span class="fc" id="L1228">             DTListasFav.add(dtL);</span>
+<span class="fc" id="L1229">          }</span>
+          
+<span class="fc" id="L1231">          return DTListasFav;</span>
+      }
+      
+      public void eliminarListaFavoritaCliente(String nickname, int idLista){
+          
+<span class="fc" id="L1236">          Cliente cliente=cpu.obtenerCliente(nickname);</span>
+          
+          
+<span class="fc" id="L1239">          cliente.eliminarListaFavorita(idLista);</span>
+          
+<span class="fc" id="L1241">          cpu.editarCliente(cliente);</span>
+          
+          
+<span class="fc" id="L1244">      }</span>
+      
+      public List&lt;DataTema&gt; traerTemasFavoritosPorIdCliente(String nickname){
+<span class="fc" id="L1247">          Cliente cliente = cpu.obtenerCliente(nickname);</span>
+<span class="fc" id="L1248">          List&lt;DataTema&gt; DTTemas = new ArrayList();</span>
+<span class="fc" id="L1249">          List&lt;Tema&gt; listaTemas = cliente.getTemasFavoritos();</span>
+
+<span class="fc bfc" id="L1251" title="All 2 branches covered.">          for(Tema t: listaTemas){</span>
+             
+<span class="fc" id="L1253">             DTTemas.add(t.getDataTemaI());</span>
+<span class="fc" id="L1254">          }</span>
+          
+<span class="fc" id="L1256">          return DTTemas;</span>
+      }
+      
+      
+      public void eliminarTemasFavoritosCliente(String nickname, Long idTema){
+          
+<span class="fc" id="L1262">          Cliente cliente=cpu.obtenerCliente(nickname);</span>
+          
+          
+<span class="fc" id="L1265">          cliente.eliminarTemaFavorito(idTema);</span>
+          
+<span class="fc" id="L1267">          cpu.editarCliente(cliente);</span>
+          
+          
+<span class="fc" id="L1270">      }</span>
+      
+       public List&lt;DataAlbum&gt; traerAlbumesFavoritosPorIdCliente(String nickname){
+<span class="fc" id="L1273">          Cliente cliente = cpu.obtenerCliente(nickname);</span>
+<span class="fc" id="L1274">          List&lt;DataAlbum&gt; DTAlbum = new ArrayList();</span>
+<span class="fc" id="L1275">          List&lt;Album&gt; listaAlbumes = cliente.getAlbumesFavoritos();</span>
+          
+<span class="fc bfc" id="L1277" title="All 2 branches covered.">          for(Album a: listaAlbumes){</span>
+             
+<span class="fc" id="L1279">             DTAlbum.add(a.getDataAlbum());</span>
+<span class="fc" id="L1280">          }</span>
+<span class="fc" id="L1281">          return DTAlbum;</span>
+      }
+       
+       public void eliminarAlbumesFavoritosCliente(String nickname, Long idAlbum){
+          
+<span class="fc" id="L1286">          Cliente cliente=cpu.obtenerCliente(nickname);</span>
+          
+          
+<span class="fc" id="L1289">          cliente.eliminarAlbumesFavoritos(idAlbum);</span>
+          
+<span class="fc" id="L1291">          cpu.editarCliente(cliente);</span>
+          
+<span class="fc" id="L1293">      }</span>
+       
+       public List&lt;Tema&gt; getTemas(Album album){
+<span class="fc" id="L1296">           return cpu.traerTemasPorIdAlbum(album.getId());</span>
+       }
+       
+       public DataGenero[] getGeneros2() throws GeneroNoExisteException {
+<span class="fc" id="L1300">        List&lt;Genero&gt; generos = cpu.obtenerTodosLosGeneros();</span>
+<span class="fc bfc" id="L1301" title="All 2 branches covered.">        if (!generos.isEmpty()) {</span>
+<span class="fc" id="L1302">            DataGenero[] dataGen = new DataGenero[generos.size()];</span>
+<span class="fc bfc" id="L1303" title="All 2 branches covered.">            for (int i = 0; i &lt; generos.size(); i++) {</span>
+<span class="fc" id="L1304">                dataGen[i] = generos.get(i).devolverData();</span>
+            }
+<span class="fc" id="L1306">            return dataGen;</span>
+        }else{
+<span class="fc" id="L1308">            throw new GeneroNoExisteException(&quot;No existen generos registrados&quot;);</span>
+        } 
+    }
+
+    public DataAlbum[] getAlbumsByGenero(String genero) throws AlbumNoExisteException {
+<span class="fc" id="L1313">        List&lt;Album&gt; albums = cpu.obtenerAlbumPorGenero(genero);</span>
+<span class="fc bfc" id="L1314" title="All 2 branches covered.">        if (!albums.isEmpty()) {</span>
+<span class="fc" id="L1315">            DataAlbum[] dataAlbums = new DataAlbum[albums.size()];</span>
+<span class="fc bfc" id="L1316" title="All 2 branches covered.">            for (int i = 0; i &lt; albums.size(); i++) {</span>
+<span class="fc" id="L1317">                dataAlbums[i] = albums.get(i).devolverData();</span>
+<span class="fc" id="L1318">                System.out.println(dataAlbums[i]);</span>
+            }
+
+<span class="fc" id="L1321">            return dataAlbums;</span>
+        } else {
+<span class="fc" id="L1323">            throw new AlbumNoExisteException(&quot;No existen álbumes para el género seleccionado.&quot;);</span>
+        }
+    }
+       
+       public List&lt;DataLista&gt; getListasParticulares(String nickname){
+<span class="fc" id="L1328">            List&lt;ListaParticular&gt; dtListaPart = cpu.traerListasParticularesPorCliente(nickname);</span>
+<span class="fc" id="L1329">            List&lt;DataLista&gt; DTListas = new ArrayList&lt;&gt;();;</span>
+<span class="fc bfc" id="L1330" title="All 2 branches covered.">            for(ListaParticular lp : dtListaPart){</span>
+<span class="fc" id="L1331">              DataLista dtLista = new DataLista(lp);</span>
+<span class="fc" id="L1332">              DTListas.add(dtLista);</span>
+<span class="fc" id="L1333">          }</span>
+
+<span class="fc" id="L1335">            return DTListas;</span>
+       }
+
+       public DataLista getListaDefecto(String nombre){
+<span class="fc" id="L1339">           ListaPorDefecto lista = traerListaPorDefecto(nombre);</span>
+<span class="fc" id="L1340">           DataLista dtLista = new DataLista(lista);</span>
+<span class="fc" id="L1341">           return dtLista;</span>
+       }
+   
+       public void eliminarTemasListaPart(String nombre, String nombreL, Long idTema){
+
+<span class="fc" id="L1346">        DataLista dtL = traerListaPartClienteNombre(nombre, nombreL);</span>
+<span class="fc" id="L1347">        ListaParticular listaP = (ListaParticular)cpu.traerListaReproduccionPorId(dtL.getId());</span>
+<span class="fc" id="L1348">        listaP.eliminarTema(idTema);</span>
+<span class="fc" id="L1349">        cpu.editarListaReproduccion(listaP);</span>
+<span class="fc" id="L1350">        dtL.eliminarTema(idTema);</span>
+ 
+<span class="fc" id="L1352">      }</span>
+       
+       public void eliminarTemaListaDef(String nombre, Long idTema){
+<span class="fc" id="L1355">           DataLista dtL = getListaDefecto(nombre);</span>
+<span class="fc" id="L1356">           ListaPorDefecto listaD = cpu.traerListaPorDefectoPorId(dtL.getId());</span>
+<span class="fc" id="L1357">           listaD.eliminarTema(idTema);</span>
+<span class="fc" id="L1358">           cpu.editarListaReproduccion(listaD);</span>
+<span class="fc" id="L1359">           dtL.eliminarTema(idTema);</span>
+<span class="fc" id="L1360">       }</span>
+       
+       public boolean existeTemaLista(Long idTema, int idLista) {
+
+<span class="fc" id="L1364">        ListaReproduccion lista = cpu.traerListaReproduccionPorId(idLista);</span>
+
+<span class="fc" id="L1366">        Set&lt;Tema&gt; listaTemas = lista.getListaTemas();</span>
+
+<span class="fc bfc" id="L1368" title="All 2 branches covered.">        for(Tema t: listaTemas){</span>
+<span class="fc bfc" id="L1369" title="All 2 branches covered.">            if(t.getId()==idTema){</span>
+<span class="fc" id="L1370">                return true;</span>
+            }
+<span class="fc" id="L1372">        }</span>
+<span class="fc" id="L1373">        return false;</span>
+
+      }
+       
+    public List&lt;DataTema&gt; getDataTemasAjax(String s) {
+<span class="fc" id="L1378">        List&lt;Tema&gt; lTema = cpu.getTemasAjax(s);</span>
+<span class="fc" id="L1379">        List&lt;DataTema&gt; dtTemas = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L1380" title="All 2 branches covered.">        for (Tema tema : lTema) {</span>
+<span class="fc" id="L1381">            DataTema dtTema = tema.getDataTemaI();;</span>
+<span class="fc" id="L1382">            dtTemas.add(dtTema);</span>
+<span class="fc" id="L1383">            System.out.println(&quot;Tema: &quot; + dtTema.getNombre());</span>
+<span class="fc" id="L1384">        }</span>
+<span class="fc" id="L1385">        return dtTemas;</span>
+    }
+       
+    public List&lt;DataLista&gt; getDataListasReproduccionAjax(String s, String tipo) {
+<span class="fc" id="L1389">        List&lt;ListaReproduccion&gt; lRP = cpu.getListasAjax(s);</span>
+<span class="fc" id="L1390">        List&lt;DataLista&gt; DTListasP = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L1391">        List&lt;DataLista&gt; DTListasD = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L1393" title="All 2 branches covered.">        for (ListaReproduccion lr : lRP) {</span>
+<span class="fc bfc" id="L1394" title="All 2 branches covered.">            if (lr instanceof ListaPorDefecto) {</span>
+<span class="fc" id="L1395">                DataLista dtLista = new DataLista((ListaPorDefecto) lr);</span>
+<span class="fc" id="L1396">                DTListasD.add(dtLista);</span>
+                
+<span class="pc bpc" id="L1398" title="1 of 2 branches missed.">            } else if (lr instanceof ListaParticular) {</span>
+<span class="fc" id="L1399">                DataLista dtLista = new DataLista((ListaParticular) lr);</span>
+<span class="fc" id="L1400">                DTListasP.add(dtLista);</span>
+                
+            }
+<span class="fc" id="L1403">        }</span>
+<span class="fc bfc" id="L1404" title="All 2 branches covered.">        if(tipo.equals(&quot;part&quot;)){</span>
+<span class="fc" id="L1405">            return DTListasP;</span>
+        }else{
+<span class="fc" id="L1407">            return DTListasD;</span>
+        }
+    }   
+    
+    
+    public List&lt;DataAlbum&gt; getDataAlbumsAjax(String s) {
+<span class="fc" id="L1413">        List&lt;Album&gt; lAlbum = cpu.getAlbumsAjax(s);</span>
+<span class="fc" id="L1414">        List&lt;DataAlbum&gt; DTAlbums = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L1416" title="All 2 branches covered.">        for (Album album : lAlbum) {</span>
+<span class="fc" id="L1417">            DataAlbum dtAlbum = album.getDataAlbum();</span>
+<span class="fc" id="L1418">            DTAlbums.add(dtAlbum);</span>
+<span class="fc" id="L1419">        }</span>
+<span class="fc" id="L1420">        return DTAlbums;</span>
+    }
+    
+    
+    public List&lt;DataUsuario&gt; getDataUsuariosAjax(String s, String tipo) {
+<span class="fc" id="L1425">        List&lt;Usuario&gt; lUsr = cpu.getUsuariosAjax(s);</span>
+<span class="fc" id="L1426">        List&lt;DataUsuario&gt; DTCli = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L1427">        List&lt;DataUsuario&gt; DTArt = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L1429" title="All 2 branches covered.">        for (Usuario usuario : lUsr) {</span>
+<span class="fc bfc" id="L1430" title="All 2 branches covered.">            if (usuario instanceof Artista) {</span>
+<span class="fc" id="L1431">                Artista artista = (Artista) usuario;</span>
+<span class="fc" id="L1432">                DataUsuario dtArt = new DataUsuario(</span>
+<span class="fc" id="L1433">                    artista.getNickname(),</span>
+<span class="fc" id="L1434">                    artista.getNombre(),</span>
+<span class="fc" id="L1435">                    artista.getApellido(),</span>
+<span class="fc" id="L1436">                    artista.getEmail(),</span>
+<span class="fc" id="L1437">                    artista.getFechaNac(),</span>
+<span class="fc" id="L1438">                    artista.getImagenPerfil()</span>
+                );
+<span class="fc" id="L1440">                DTArt.add(dtArt);</span>
+
+<span class="pc bpc" id="L1442" title="1 of 2 branches missed.">            } else if (usuario instanceof Cliente) {</span>
+<span class="fc" id="L1443">                Cliente cliente = (Cliente) usuario;</span>
+<span class="fc" id="L1444">                DataUsuario dtCli = new DataUsuario(</span>
+<span class="fc" id="L1445">                    cliente.getNickname(),</span>
+<span class="fc" id="L1446">                    cliente.getNombre(),</span>
+<span class="fc" id="L1447">                    cliente.getApellido(),</span>
+<span class="fc" id="L1448">                    cliente.getEmail(),</span>
+<span class="fc" id="L1449">                    cliente.getFechaNac(),</span>
+<span class="fc" id="L1450">                    cliente.getImagenPerfil()</span>
+                );
+<span class="fc" id="L1452">                DTCli.add(dtCli);</span>
+
+            }
+<span class="fc" id="L1455">        }</span>
+<span class="fc bfc" id="L1456" title="All 2 branches covered.">        if(tipo.equals(&quot;art&quot;)){</span>
+<span class="fc" id="L1457">            return DTArt;</span>
+        }else{
+<span class="fc" id="L1459">            return DTCli;</span>
+        }
+
+    }
+       
+       
+//    public void pruebaDatos(String s) {
+//    // Obtener las listas utilizando las funciones que ya creaste
+//
+//    // Obtener los temas
+//    List&lt;DataTema&gt; DTTemas = getDataTemasAjax(s);
+//
+//    // Obtener las listas de reproducción (particulares y por defecto)
+//    List&lt;DataLista&gt; DTListasP = getDataListasReproduccionAjax(s, &quot;part&quot;);
+//    List&lt;DataLista&gt; DTListasD = getDataListasReproduccionAjax(s, &quot;def&quot;);
+//
+//    // Obtener los usuarios (artistas y clientes)
+//    List&lt;DataUsuario&gt; DTArtista = getDataUsuariosAjax(s, &quot;art&quot;);
+//    List&lt;DataUsuario&gt; DTCliente = getDataUsuariosAjax(s, &quot;cli&quot;);
+//
+//    // Obtener los álbumes
+//    List&lt;DataAlbum&gt; DTAlbums = getDataAlbumsAjax(s);
+//    
+//    // Imprimir los nombres para ver el resultado
+//    for (DataTema dtTema : DTTemas) {
+//        System.out.println(&quot;Tema: &quot; + dtTema.getNombre());
+//    }
+//
+//    for (DataLista dtListaP : DTListasP) {
+//        System.out.println(&quot;Lista de Reproducción P: &quot; + dtListaP.getNombre());
+//    }
+//
+//    for (DataLista dtListaD : DTListasD) {
+//        System.out.println(&quot;Lista de Reproducción D: &quot; + dtListaD.getNombre());
+//    }
+//
+//    for (DataUsuario dtArtista : DTArtista) {
+//        System.out.println(&quot;Artista: &quot; + dtArtista.getNick());
+//    }
+//
+//    for (DataUsuario dtCliente : DTCliente) {
+//        System.out.println(&quot;Cliente: &quot; + dtCliente.getNick());
+//    }
+//
+//    for (DataAlbum dtAlbum : DTAlbums) {
+//        System.out.println(&quot;Álbum: &quot; + dtAlbum.getNombre());
+//    }
+//}
+          
+   public void cargarDatos() throws GeneroRepetidoException, UsuarioRepetidoException{
+       
+//    // Artistas
+//    altaPerfil(&quot;vpeople&quot;, &quot;Village&quot;, &quot;People&quot;, &quot;vpeople123&quot;, &quot;vpeople@tuta.io&quot;, LocalDate.parse(&quot;1977-01-01&quot;), &quot;vpeople_artista.jpg&quot;, 
+//        &quot;Village People es una innovadora formación musical de estilo disco de finales de los años 70. Fue famosa tanto por sus peculiares disfraces, como por sus canciones pegadizas, con letras sugerentes y llenas de dobles sentidos.&quot;, 
+//        &quot;www.officialvillagepeople.com&quot;, ARTISTA);
+//
+//    altaPerfil(&quot;dmode&quot;, &quot;Depeche&quot;, &quot;Mode&quot;, &quot;dmode123&quot;, &quot;dmode@tuta.io&quot;, LocalDate.parse(&quot;1980-06-14&quot;), &quot;dmode_artista.jpg&quot;, 
+//        null, &quot;www.depechemode.com&quot;, ARTISTA);
+//
+//    altaPerfil(&quot;clauper&quot;, &quot;Cyndi&quot;, &quot;Lauper&quot;, &quot;clauper123&quot;, &quot;clauper@hotmail.com&quot;, LocalDate.parse(&quot;1953-06-22&quot;), &quot;clauper_artista.jpg&quot;, 
+//        &quot;Cynthia Ann Stephanie Lauper, conocida como Cyndi Lauper, es una cantautora, actriz y empresaria estadounidense. Después de participar en el grupo musical, Blue Angel, en 1983 firmó con Portrait Records y lanzó su álbum debut She's So Unusual a finales de ese mismo año. Continuó lanzando álbumes exitosos a lo largo de su carrera.&quot;, 
+//        &quot;cyndilauper.com&quot;, ARTISTA);
+//
+//    altaPerfil(&quot;bruceTheBoss&quot;, &quot;Bruce&quot;, &quot;Springsteen&quot;, &quot;bruce123&quot;, &quot;bruceTheBoss@gmail.com&quot;, LocalDate.parse(&quot;1949-09-23&quot;), &quot;brucetheboss_artista.jpg&quot;, 
+//        null, &quot;brucespringsteen.net&quot;, ARTISTA);
+//
+//    altaPerfil(&quot;tigerOfWales&quot;, &quot;Tom&quot;, &quot;Jones&quot;, &quot;tiger123&quot;,&quot;tigerOfWales@tuta.io&quot;, LocalDate.parse(&quot;1940-06-07&quot;), null, 
+//        &quot;Sir Thomas John, conocido como Tom Jones, es un cantante británico con más de 100 millones de discos vendidos en todo el mundo.&quot;, 
+//        &quot;www.tomjones.com&quot;, ARTISTA);
+//
+//    altaPerfil(&quot;tripleNelson&quot;, &quot;La Triple&quot;, &quot;Nelson&quot;, &quot;triple123&quot;, &quot;tripleNelson@tuta.io&quot;, LocalDate.parse(&quot;1998-01-01&quot;), &quot;triplenelson_artista.jpg&quot;, 
+//        &quot;La Triple Nelson es un grupo de rock uruguayo formado en 1998 e integrado inicialmente por Christian Cary, Fernando Pintos y Rubén Otonello.&quot;, 
+//        null, ARTISTA);
+//
+//    altaPerfil(&quot;la_ley&quot;, &quot;La&quot;, &quot;Ley&quot;, &quot;laley123&quot;, &quot;la_ley@tuta.io&quot;, LocalDate.parse(&quot;1987-02-14&quot;), null, null, null, ARTISTA);
+//
+//    altaPerfil(&quot;chaiko&quot;, &quot;Piotr&quot;, &quot;Tchaikovsky&quot;, &quot;chaiko123&quot;,&quot;chaiko@tuta.io&quot;, LocalDate.parse(&quot;1840-04-25&quot;), null, 
+//        &quot;Piotr Ilich Chaikovski fue un compositor ruso del período del Romanticismo.&quot;, 
+//        null, ARTISTA);
+//
+//    altaPerfil(&quot;nicoleneu&quot;, &quot;Nicole&quot;, &quot;Neumann&quot;, &quot;nicole123&quot;, &quot;nicoleneu@hotmail.com&quot;, LocalDate.parse(&quot;1980-10-31&quot;), &quot;nicoleneuman_artista.jpg&quot;, null, null, ARTISTA);
+//
+//    altaPerfil(&quot;lospimpi&quot;, &quot;Pimpinela&quot;, null, &quot;lospimpi123&quot;, &quot;lospimpi@gmail.com&quot;, LocalDate.parse(&quot;1981-08-13&quot;), &quot;pimpinela_artista.jpg&quot;, null, &quot;www.pimpinela.net&quot;, ARTISTA);
+//
+//    altaPerfil(&quot;dyangounchained&quot;, &quot;Dyango&quot;, null, &quot;dyango123&quot;, &quot;dyangounchained@gmail.com&quot;, LocalDate.parse(&quot;1940-03-05&quot;), null, 
+//        &quot;José Gómez Romero, conocido como Dyango, es un cantante español de música romántica.&quot;, 
+//        null, ARTISTA);
+//
+//    altaPerfil(&quot;alcides&quot;, &quot;Alcides&quot;, null, &quot;alcides123&quot;, &quot;alcides@tuta.io&quot;, LocalDate.parse(&quot;1952-07-17&quot;), null, 
+//        &quot;Su carrera comienza en 1976 cuando forma la banda Los Playeros junto a su hermano Víctor. A nivel nacional, Alcides gana popularidad en los años 1990 con el éxito 'Violeta'.&quot;, 
+//        null, ARTISTA);
+//
+//    // Clientes
+//    altaPerfil(&quot;el_padrino&quot;, &quot;Vito&quot;, &quot;Corleone&quot;, &quot;elpadrino123&quot;, &quot;el_padrino@tuta.io&quot;, LocalDate.parse(&quot;1972-03-08&quot;), &quot;vitoCorleone_cliente.JPG&quot;, null, null, CLIENTE);
+//
+//    altaPerfil(&quot;scarlettO&quot;, &quot;Scarlett&quot;, &quot;O'Hara&quot;, &quot;scarlett0123&quot;, &quot;scarlettO@tuta.io&quot;, LocalDate.parse(&quot;1984-11-27&quot;), &quot;scarletto_cliente.jpg&quot;, null, null, CLIENTE);
+//
+//    altaPerfil(&quot;ppArgento&quot;, &quot;Pepe&quot;, &quot;Argento&quot;, &quot;ppargento123&quot;, &quot;ppArgento@hotmail.com&quot;, LocalDate.parse(&quot;1955-02-14&quot;), &quot;pepeargento_cliente.png&quot;, null, null, CLIENTE);
+//
+//    altaPerfil(&quot;Heisenberg&quot;, &quot;Walter&quot;, &quot;White&quot;, &quot;heisenberg123&quot;, &quot;Heisenberg@tuta.io&quot;, LocalDate.parse(&quot;1956-03-07&quot;), &quot;heisenbergBD_cliente.png&quot;, null, null, CLIENTE);
+//
+//    altaPerfil(&quot;benKenobi&quot;, &quot;Obi-Wan&quot;, &quot;Kenobi&quot;, &quot;ben123&quot;, &quot;benKenobi@gmail.com&quot;, LocalDate.parse(&quot;1914-04-02&quot;), &quot;Ben_Kenobi.png&quot;, null, null, CLIENTE);
+//
+//    altaPerfil(&quot;lachiqui&quot;, &quot;Mirtha&quot;, &quot;Legrand&quot;, &quot;lachiqui123&quot;, &quot;lachiqui@hotmail.com.ar&quot;, LocalDate.parse(&quot;1927-02-23&quot;), &quot;Mirtha_Legrand_cliente.jpg&quot;, null, null, CLIENTE);
+//
+//    altaPerfil(&quot;cbochinche&quot;, &quot;Cacho&quot;, &quot;Bochinche&quot;, &quot;cbochinche123&quot;, &quot;cbochinche@vera.com.uy&quot;, LocalDate.parse(&quot;1937-05-08&quot;), &quot;cachobochinche_cliente.jpg&quot;, null, null, CLIENTE);
+//
+//    altaPerfil(&quot;Eleven11&quot;, &quot;Eleven&quot;, null, &quot;eleven123&quot;, &quot;Eleven11@gmail.com&quot;, LocalDate.parse(&quot;1971-12-31&quot;), &quot;eleven_cliente.png&quot;, null, null, CLIENTE);
+//    
+//    //GENEROS
+//    
+//    altaGenero(&quot;Rock&quot;, &quot;Genero&quot;);
+//    altaGenero(&quot;Rock Clásico&quot;, &quot;Rock&quot;);
+//    altaGenero(&quot;Rock Latino&quot;, &quot;Rock&quot;);
+//    altaGenero(&quot;Rock &amp; Roll&quot;, &quot;Rock&quot;);
+//    altaGenero(&quot;Clásica&quot;, &quot;Genero&quot;);
+//    altaGenero(&quot;Disco&quot;, &quot;Genero&quot;);
+//    altaGenero(&quot;Pop&quot;, &quot;Genero&quot;);
+//    altaGenero(&quot;Electropop&quot;, &quot;Pop&quot;);
+//    altaGenero(&quot;Dance-pop&quot;, &quot;Pop&quot;);
+//    altaGenero(&quot;Pop Clásico&quot;, &quot;Pop&quot;);
+//    altaGenero(&quot;Balada&quot;, &quot;Genero&quot;);
+//    altaGenero(&quot;Cumbia&quot;, &quot;Genero&quot;);
+//    
+//       //ALBUM
+//    cargarDatosAlbum(&quot;Village People Live and Sleazy&quot;, &quot;vpeople&quot;, 1980, null);
+//    addGeneroAlbum(&quot;Disco&quot;);
+//    addGeneroAlbum(&quot;Dance-pop&quot;);
+//    addGeneroAlbum(&quot;Pop Clásico&quot;);
+//    altaTema(&quot;YMCA&quot;, &quot;4:28&quot;, 1, &quot;-&quot;, &quot;Village People - Y.M.C.A (Lyrics).mp3&quot;);
+//    altaTema(&quot;Macho Man&quot;, &quot;3:28&quot;, 2, &quot;-&quot;, &quot;Village People  Macho Man.mp3&quot;);
+//    altaTema(&quot;In the Navy&quot;, &quot;3:13&quot;, 3, &quot;-&quot;, &quot;In The Navy - Village People.mp3&quot;);
+//    altaAlbum();
+//
+//    cargarDatosAlbum(&quot;Violator&quot;, &quot;dmode&quot;, 1990, null);
+//    addGeneroAlbum(&quot;Electropop&quot;);
+//    altaTema(&quot;Personal Jesus&quot;, &quot;4:56&quot;, 1, &quot;-&quot;, &quot;Depeche Mode Personal Jesus ( Violator ).mp3&quot;);
+//    altaTema(&quot;Enjoy The Silence&quot;, &quot;4:21&quot;, 2, &quot;-&quot;, &quot;Depeche Mode - Enjoy the Silence (Lyrics).mp3&quot;);
+//    altaAlbum();
+//
+//    cargarDatosAlbum(&quot;She’s So Unusual&quot;, &quot;clauper&quot;, 1983, &quot;ShesSoUnusual.png&quot;);
+//    addGeneroAlbum(&quot;Pop Clásico&quot;);
+//    addGeneroAlbum(&quot;Dance-pop&quot;);
+//    altaTema(&quot;Girls Just Want To Have Fun&quot;, &quot;3:15&quot;, 1, &quot;https://soundcloud.com/djwillians3/120-las-chicas-solo-quieren&quot;, &quot;-&quot;);
+//    altaTema(&quot;Time After Time&quot;, &quot;5:12&quot;, 2, &quot;-&quot;, &quot;Cyndi Lauper - Time after time (Lyrics).mp3&quot;);
+//    altaAlbum();
+//
+//    cargarDatosAlbum(&quot;Born In The U.S.A.&quot;, &quot;bruceTheBoss&quot;, 1984, null);
+//    addGeneroAlbum(&quot;Rock Clásico&quot;);
+//    addGeneroAlbum(&quot;Rock &amp; Roll&quot;);
+//    addGeneroAlbum(&quot;Pop Clásico&quot;);
+//    altaTema(&quot;Born In The U.S.A.&quot;, &quot;4:58&quot;, 1, &quot;https://soundcloud.com/bedoc/bruce-springsteen-born-in-the&quot;, &quot;-&quot;);
+//    altaTema(&quot;Glory Days&quot;, &quot;5:23&quot;, 2, &quot;https://soundcloud.com/scottrek-160/glory-days-bruce-springsteen-the-e-street-band-1&quot;, &quot;-&quot;);
+//    altaTema(&quot;Dancing In The Park&quot;, &quot;3:58&quot;, 3, &quot;https://www.youtube.com/watch?v=129kuDCQtHs&quot;, &quot;-&quot;);
+//    altaAlbum();
+//
+//    cargarDatosAlbum(&quot;It’s Not Unusual&quot;, &quot;tigerOfWales&quot;, 1965, &quot;ItsNotUnusual.jpeg&quot;);
+//    addGeneroAlbum(&quot;Rock Clásico&quot;);
+//    addGeneroAlbum(&quot;Pop Clásico&quot;);
+//    altaTema(&quot;It’s Not Unusual&quot;, &quot;2:00&quot;, 1, &quot;-&quot;, &quot;It's Not Unusual.mp3&quot;);
+//    altaAlbum();
+//
+//    cargarDatosAlbum(&quot;Agua Y Sal&quot;, &quot;tripleNelson&quot;, 2012, null);
+//    addGeneroAlbum(&quot;Rock Latino&quot;);
+//    altaTema(&quot;Adagio De Mi País&quot;, &quot;4:50&quot;, 1, &quot;https://soundcloud.com/seba-taur/adagio-de-mi-pa-s-la-triple&quot;, &quot;-&quot;);
+//    altaAlbum();
+//
+//    cargarDatosAlbum(&quot;MTV Unplugged&quot;, &quot;la_ley&quot;, 2001, &quot;mtvunpluged.jpg&quot;);
+//    addGeneroAlbum(&quot;Rock Latino&quot;);
+//    addGeneroAlbum(&quot;Pop Clásico&quot;);
+//    altaTema(&quot;El Duelo&quot;, &quot;5:23&quot;, 1, &quot;-&quot;, &quot;El Duelo.mp3&quot;);
+//    altaTema(&quot;Mentira&quot;, &quot;4:48&quot;, 2, &quot;-&quot;, &quot;Mentira.mp3&quot;);
+//    altaAlbum();
+//
+//    cargarDatosAlbum(&quot;El Lago De Los Cisnes&quot;, &quot;chaiko&quot;, 1875, null);
+//    addGeneroAlbum(&quot;Clásica&quot;);
+//    altaTema(&quot;Acto 2, Número 10, Escena (Moderato)&quot;, &quot;2:40&quot;, 1, &quot;https://soundcloud.com/the-australian-ballet/swan-lake-act-ii&quot;, &quot;-&quot;);
+//    altaAlbum();
+//
+//    cargarDatosAlbum(&quot;Concierto Para Piano No. 1 En Si Menor, Opus 23&quot;, &quot;chaiko&quot;, 1875, null);
+//    addGeneroAlbum(&quot;Clásica&quot;);
+//    altaTema(&quot;Primer Movimiento (Allegro non troppo e molto maestoso – Allegro con spirito)&quot;, &quot;21:58&quot;, 1, &quot;https://soundcloud.com/pierre-delignies/tchaikovsky-piano-concerto-no-1-1st-mov&quot;, &quot;-&quot;);
+//    altaAlbum();
+//
+//    cargarDatosAlbum(&quot;Primer Amor&quot;, &quot;nicoleneu&quot;, 1994, null);
+//    addGeneroAlbum(&quot;Electropop&quot;);
+//    altaTema(&quot;No Quiero Estudiar&quot;, &quot;2:12&quot;, 1, &quot;-&quot;, &quot;No Quiero Estudiar.mp3&quot;);
+//    altaAlbum();
+//
+//    cargarDatosAlbum(&quot;Hay Amores Que Matan&quot;, &quot;lospimpi&quot;, 1993, null);
+//    addGeneroAlbum(&quot;Pop Clásico&quot;);
+//    addGeneroAlbum(&quot;Balada&quot;);
+//    altaTema(&quot;Por Ese Hombre&quot;, &quot;4:45&quot;, 1, &quot;-&quot;, &quot;Pimpinela.mp3&quot;);
+//    altaAlbum();
+//
+//    cargarDatosAlbum(&quot;Un Loco Como Yo&quot;, &quot;dyangounchained&quot;, 1993, &quot;unlococomoyo.jpg&quot;);
+//    addGeneroAlbum(&quot;Pop Clásico&quot;);
+//    addGeneroAlbum(&quot;Balada&quot;);
+//    altaTema(&quot;Por Ese Hombre&quot;, &quot;5:13&quot;, 1, &quot;https://soundcloud.com/vdj-molina-sound-pro/pimpinela-y-dyango-ese-hombre-remix-by-dj-molina&quot;, &quot;-&quot;);
+//    altaAlbum();
+//
+//    cargarDatosAlbum(&quot;20 Grandes Éxitos&quot;, &quot;alcides&quot;, 1989, &quot;20grandesexitos.jpg&quot;);
+//    addGeneroAlbum(&quot;Cumbia&quot;);
+//    altaTema(&quot;Violeta&quot;, &quot;1:56&quot;, 1, &quot;https://soundcloud.com/eel-chriiss-tiiamm/violeta-alcides-dj-criis&quot;, &quot;-&quot;);
+//    altaAlbum();
+//    //LISTAS DE REPRODUCCION
+//    List&lt;Tema&gt; listaTemas;
+//
+//    Album VPL = getAlbumEspecificoArt(&quot;Village People Live and Sleazy&quot;, &quot;vpeople&quot;);
+//    listaTemas = getTemas(VPL);
+//    VPL.setTemas(listaTemas);
+//
+//    Album DMV = getAlbumEspecificoArt(&quot;Violator&quot;, &quot;dmode&quot;);
+//    listaTemas = getTemas(DMV);
+//    DMV.setTemas(listaTemas);
+//
+//    Album CLU = getAlbumEspecificoArt(&quot;She’s So Unusual&quot;, &quot;clauper&quot;);
+//    listaTemas = getTemas(CLU);
+//    CLU.setTemas(listaTemas);
+//
+//    Album USA = getAlbumEspecificoArt(&quot;Born In The U.S.A.&quot;, &quot;bruceTheBoss&quot;);
+//    listaTemas = getTemas(USA);
+//    USA.setTemas(listaTemas);
+//
+//    Album INU = getAlbumEspecificoArt(&quot;It’s Not Unusual&quot;, &quot;tigerOfWales&quot;);
+//    listaTemas = getTemas(INU);
+//    INU.setTemas(listaTemas);
+//
+//    Album AYS = getAlbumEspecificoArt(&quot;Agua Y Sal&quot;, &quot;tripleNelson&quot;);
+//    listaTemas = getTemas(AYS);
+//    AYS.setTemas(listaTemas);
+//
+//    Album LLU = getAlbumEspecificoArt(&quot;MTV Unplugged&quot;, &quot;la_ley&quot;);
+//    listaTemas = getTemas(LLU);
+//    LLU.setTemas(listaTemas);
+//
+//    Album LDC = getAlbumEspecificoArt(&quot;El Lago De Los Cisnes&quot;, &quot;chaiko&quot;);
+//    listaTemas = getTemas(LDC);
+//    LDC.setTemas(listaTemas);
+//
+//    Album CPP = getAlbumEspecificoArt(&quot;Concierto Para Piano No. 1 En Si Menor, Opus 23&quot;, &quot;chaiko&quot;);
+//    listaTemas = getTemas(CPP);
+//    CPP.setTemas(listaTemas);
+//
+//    Album PAM = getAlbumEspecificoArt(&quot;Primer Amor&quot;, &quot;nicoleneu&quot;);
+//    listaTemas = getTemas(PAM);
+//    PAM.setTemas(listaTemas);
+//
+//    Album AMA = getAlbumEspecificoArt(&quot;Hay Amores Que Matan&quot;, &quot;lospimpi&quot;);
+//    listaTemas = getTemas(AMA);
+//    AMA.setTemas(listaTemas);
+//
+//    Album LOC = getAlbumEspecificoArt(&quot;Un Loco Como Yo&quot;, &quot;dyangounchained&quot;);
+//    listaTemas = getTemas(LOC);
+//    LOC.setTemas(listaTemas);
+//
+//    Album VIO = getAlbumEspecificoArt(&quot;20 Grandes Éxitos&quot;, &quot;alcides&quot;);
+//    listaTemas = getTemas(VIO);
+//    VIO.setTemas(listaTemas);
+//    
+//    
+//    ListaPorDefecto ld;
+//    DataLista LD1 = new DataLista(&quot;Noche De La Nostalgia&quot;, &quot;nochedelanostalgia.jpg&quot;, &quot;Pop Clásico&quot;);
+//        try {
+//            altaListaDef(LD1);
+//            ld = traerListaPorDefecto(&quot;Noche De La Nostalgia&quot;);
+//            agregarTemaLista(ld.getId(), VPL.getTema(&quot;YMCA&quot;).getId());
+//            agregarTemaLista(ld.getId(), VPL.getTema(&quot;Macho Man&quot;).getId());
+//            agregarTemaLista(ld.getId(), VPL.getTema(&quot;In the Navy&quot;).getId());
+//            agregarTemaLista(ld.getId(), CLU.getTema(&quot;Girls Just Want To Have Fun&quot;).getId());
+//            agregarTemaLista(ld.getId(), CLU.getTema(&quot;Time After Time&quot;).getId());
+//            agregarTemaLista(ld.getId(), USA.getTema(&quot;Born In The U.S.A.&quot;).getId());
+//            agregarTemaLista(ld.getId(), USA.getTema(&quot;Glory Days&quot;).getId());
+//            agregarTemaLista(ld.getId(), USA.getTema(&quot;Dancing In The Park&quot;).getId());
+//            agregarTemaLista(ld.getId(), INU.getTema(&quot;It’s Not Unusual&quot;).getId());
+//        } catch (ListaRepetidaException ex) {
+//            Logger.getLogger(Sistema.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//
+//    DataLista LD2 = new DataLista(&quot;Rock En Español&quot;, &quot;-&quot;, &quot;Rock Latino &quot;);
+//        try {
+//            altaListaDef(LD2);
+//            ld = traerListaPorDefecto(&quot;Rock En Español&quot;);
+//            agregarTemaLista(ld.getId(), AYS.getTema(&quot;Adagio De Mi País&quot;).getId());
+//            agregarTemaLista(ld.getId(), LLU.getTema(&quot;El Duelo&quot;).getId());
+//            agregarTemaLista(ld.getId(), LLU.getTema(&quot;Mentira&quot;).getId());
+//        } catch (ListaRepetidaException ex) {
+//            Logger.getLogger(Sistema.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//
+//    DataLista LD3 = new DataLista(&quot;Música Clásica&quot;, &quot;musicaclasica.jpg&quot;, &quot;Clásica&quot;);
+//        try {
+//            altaListaDef(LD3);
+//            ld = traerListaPorDefecto(&quot;Música Clásica&quot;);
+//            agregarTemaLista(ld.getId(), LDC.getTema(&quot;Acto 2, Número 10, Escena (Moderato)&quot;).getId());
+//            agregarTemaLista(ld.getId(), CPP.getTema(&quot;Primer Movimiento (Allegro non troppo e molto maestoso – Allegro con spirito)&quot;).getId());
+//        } catch (ListaRepetidaException ex) {
+//            Logger.getLogger(Sistema.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//    
+//    ListaParticular lp;
+//
+//    DataLista LP1 = new DataLista(&quot;Música Inspiradora&quot;, &quot;musicainspiradora.jpg&quot;, &quot;el_padrino&quot;);
+//        try {
+//            altaListaPart(LP1);
+//            lp = traerListaParticularPorCliente(&quot;Música Inspiradora&quot;, &quot;el_padrino&quot;);
+//            agregarTemaLista(lp.getId(), LDC.getTema(&quot;Acto 2, Número 10, Escena (Moderato)&quot;).getId());
+//            agregarTemaLista(lp.getId(), CPP.getTema(&quot;Primer Movimiento (Allegro non troppo e molto maestoso – Allegro con spirito)&quot;).getId());
+//            agregarTemaLista(lp.getId(), DMV.getTema(&quot;Personal Jesus&quot;).getId());
+//            modificarListaParticularPorId(lp.getId());
+//        } catch (ListaRepetidaException ex) {
+//            Logger.getLogger(Sistema.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//
+//    DataLista LP2 = new DataLista(&quot;De Todo Un Poco&quot;, &quot;-&quot;, &quot;scarlettO&quot;);
+//        try {
+//            altaListaPart(LP2);
+//            lp = traerListaParticularPorCliente(&quot;De Todo Un Poco&quot;, &quot;scarlettO&quot;);
+//            agregarTemaLista(lp.getId(), CLU.getTema(&quot;Girls Just Want To Have Fun&quot;).getId());
+//            agregarTemaLista(lp.getId(), CLU.getTema(&quot;Time After Time&quot;).getId());
+//            agregarTemaLista(lp.getId(), INU.getTema(&quot;It’s Not Unusual&quot;).getId());
+//            agregarTemaLista(lp.getId(), LDC.getTema(&quot;Acto 2, Número 10, Escena (Moderato)&quot;).getId());
+//            modificarListaParticularPorId(lp.getId());
+//        } catch (ListaRepetidaException ex) {
+//            Logger.getLogger(Sistema.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//
+//    DataLista LP3 = new DataLista(&quot;Para Cocinar&quot;, &quot;ParaCocinar.png&quot;, &quot;Heisenberg&quot;);
+//        try {
+//            altaListaPart(LP3);
+//            lp = traerListaParticularPorCliente(&quot;Para Cocinar&quot;, &quot;Heisenberg&quot;);
+//            agregarTemaLista(lp.getId(), DMV.getTema(&quot;Personal Jesus&quot;).getId());
+//            agregarTemaLista(lp.getId(), DMV.getTema(&quot;Enjoy The Silence&quot;).getId());
+//            agregarTemaLista(lp.getId(), USA.getTema(&quot;Born In The U.S.A.&quot;).getId());
+//            agregarTemaLista(lp.getId(), USA.getTema(&quot;Glory Days&quot;).getId());
+//            //modificarListaParticularPorId(lp.getId());
+//        } catch (ListaRepetidaException ex) {
+//            Logger.getLogger(Sistema.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//
+//    DataLista LP4 = new DataLista(&quot;Para Las Chicas&quot;, &quot;-&quot;, &quot;lachiqui&quot;);
+//        try {
+//            altaListaPart(LP4);
+//            lp = traerListaParticularPorCliente(&quot;Para Las Chicas&quot;, &quot;lachiqui&quot;);
+//            agregarTemaLista(lp.getId(), CLU.getTema(&quot;Girls Just Want To Have Fun&quot;).getId());
+//            agregarTemaLista(lp.getId(), INU.getTema(&quot;It’s Not Unusual&quot;).getId());
+//            agregarTemaLista(lp.getId(), CPP.getTema(&quot;Primer Movimiento (Allegro non troppo e molto maestoso – Allegro con spirito)&quot;).getId());
+//            agregarTemaLista(lp.getId(), PAM.getTema(&quot;No Quiero Estudiar&quot;).getId());
+//            agregarTemaLista(lp.getId(), LOC.getTema(&quot;Por Ese Hombre&quot;).getId());
+//            modificarListaParticularPorId(lp.getId());
+//        } catch (ListaRepetidaException ex) {
+//            Logger.getLogger(Sistema.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//
+//    DataLista LP5 = new DataLista(&quot;Fiesteras&quot;, &quot;fiesteras.jpg&quot;, &quot;cbochinche&quot;);
+//        try {
+//            altaListaPart(LP5);
+//            lp = traerListaParticularPorCliente(&quot;Fiesteras&quot;, &quot;cbochinche&quot;);
+//            agregarTemaLista(lp.getId(), VPL.getTema(&quot;YMCA&quot;).getId());
+//            agregarTemaLista(lp.getId(), VPL.getTema(&quot;Macho Man&quot;).getId());
+//            agregarTemaLista(lp.getId(), VPL.getTema(&quot;In the Navy&quot;).getId());
+//            agregarTemaLista(lp.getId(), USA.getTema(&quot;Glory Days&quot;).getId());
+//            agregarTemaLista(lp.getId(), VIO.getTema(&quot;Violeta&quot;).getId());
+//            modificarListaParticularPorId(lp.getId());
+//        } catch (ListaRepetidaException ex) {
+//            Logger.getLogger(Sistema.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//
+//    DataLista LP6 = new DataLista(&quot;Mis Favoritas&quot;, &quot;-&quot;, &quot;cbochinche&quot;);
+//        try {
+//            altaListaPart(LP6);
+//            lp = traerListaParticularPorCliente(&quot;Mis Favoritas&quot;, &quot;cbochinche&quot;);
+//            agregarTemaLista(lp.getId(), AYS.getTema(&quot;Adagio De Mi País&quot;).getId());
+//            agregarTemaLista(lp.getId(), CPP.getTema(&quot;Primer Movimiento (Allegro non troppo e molto maestoso – Allegro con spirito)&quot;).getId());
+//            agregarTemaLista(lp.getId(), AMA.getTema(&quot;Por Ese Hombre&quot;).getId());
+//            //modificarListaParticularPorId(lp.getId());
+//        } catch (ListaRepetidaException ex) {
+//            Logger.getLogger(Sistema.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        
+//        
+//        
+//         //Seguir Usuario
+//    Seguir_Usuario(&quot;el_padrino&quot;,&quot;vpeople&quot;);
+//    Seguir_Usuario(&quot;el_padrino&quot;,&quot;dmode&quot;);
+//    Seguir_Usuario(&quot;el_padrino&quot;,&quot;clauper&quot;);
+//    Seguir_Usuario(&quot;el_padrino&quot;,&quot;benKenobi&quot;);
+//    Seguir_Usuario(&quot;el_padrino&quot;,&quot;lachiqui&quot;);
+//    Seguir_Usuario(&quot;el_padrino&quot;,&quot;cbochinche&quot;);
+//    Seguir_Usuario(&quot;el_padrino&quot;,&quot;Eleven11&quot;);
+//    Seguir_Usuario(&quot;scarlettO&quot;,&quot;dmode&quot;);
+//    Seguir_Usuario(&quot;scarlettO&quot;,&quot;bruceTheBoss&quot;);
+//    Seguir_Usuario(&quot;scarlettO&quot;,&quot;tigerOfWales&quot;);
+//    Seguir_Usuario(&quot;scarlettO&quot;,&quot;tripleNelson&quot;);
+//    Seguir_Usuario(&quot;scarlettO&quot;,&quot;Heisenberg&quot;);
+//    Seguir_Usuario(&quot;scarlettO&quot;,&quot;benKenobi&quot;);
+//    Seguir_Usuario(&quot;scarlettO&quot;,&quot;lachiqui&quot;);
+//    Seguir_Usuario(&quot;ppArgento&quot;,&quot;dmode&quot;);
+//    Seguir_Usuario(&quot;ppArgento&quot;,&quot;bruceTheBoss&quot;);
+//    Seguir_Usuario(&quot;ppArgento&quot;,&quot;tripleNelson&quot;);
+//    Seguir_Usuario(&quot;ppArgento&quot;,&quot;benKenobi&quot;);
+//    Seguir_Usuario(&quot;ppArgento&quot;,&quot;lachiqui&quot;);
+//    Seguir_Usuario(&quot;ppArgento&quot;,&quot;cbochinche&quot;);
+//    Seguir_Usuario(&quot;ppArgento&quot;,&quot;Eleven11&quot;);
+//    Seguir_Usuario(&quot;Heisenberg&quot;,&quot;dmode&quot;);
+//    Seguir_Usuario(&quot;Heisenberg&quot;,&quot;bruceTheBoss&quot;);
+//    Seguir_Usuario(&quot;Heisenberg&quot;,&quot;tigerOfWales&quot;);
+//    Seguir_Usuario(&quot;Heisenberg&quot;,&quot;tripleNelson&quot;);
+//    Seguir_Usuario(&quot;Heisenberg&quot;,&quot;lospimpi&quot;);
+//    Seguir_Usuario(&quot;Heisenberg&quot;,&quot;dyangounchained&quot;);
+//    Seguir_Usuario(&quot;Heisenberg&quot;,&quot;alcides&quot;);
+//    Seguir_Usuario(&quot;Heisenberg&quot;,&quot;el_padrino&quot;);
+//    Seguir_Usuario(&quot;Heisenberg&quot;,&quot;scarlettO&quot;);
+//    Seguir_Usuario(&quot;Heisenberg&quot;,&quot;ppArgento&quot;);
+//    Seguir_Usuario(&quot;Heisenberg&quot;,&quot;benKenobi&quot;);
+//    Seguir_Usuario(&quot;Heisenberg&quot;,&quot;lachiqui&quot;);
+//    Seguir_Usuario(&quot;Heisenberg&quot;,&quot;Eleven11&quot;);
+//    Seguir_Usuario(&quot;benKenobi&quot;,&quot;dmode&quot;);
+//    Seguir_Usuario(&quot;benKenobi&quot;,&quot;bruceTheBoss&quot;);
+//    Seguir_Usuario(&quot;benKenobi&quot;,&quot;la_ley&quot;);
+//    Seguir_Usuario(&quot;benKenobi&quot;,&quot;chaiko&quot;);
+//    Seguir_Usuario(&quot;benKenobi&quot;,&quot;nicoleneu&quot;);
+//    Seguir_Usuario(&quot;benKenobi&quot;,&quot;lospimpi&quot;);
+//    Seguir_Usuario(&quot;benKenobi&quot;,&quot;alcides&quot;);
+//    Seguir_Usuario(&quot;benKenobi&quot;,&quot;el_padrino&quot;);
+//    Seguir_Usuario(&quot;benKenobi&quot;,&quot;ppArgento&quot;);
+//    Seguir_Usuario(&quot;benKenobi&quot;,&quot;lachiqui&quot;);
+//    Seguir_Usuario(&quot;benKenobi&quot;,&quot;cbochinche&quot;);
+//    Seguir_Usuario(&quot;benKenobi&quot;,&quot;Eleven11&quot;);
+//    Seguir_Usuario(&quot;lachiqui&quot;,&quot;bruceTheBoss&quot;);
+//    Seguir_Usuario(&quot;lachiqui&quot;,&quot;la_ley&quot;);
+//    Seguir_Usuario(&quot;lachiqui&quot;,&quot;lospimpi&quot;);
+//    Seguir_Usuario(&quot;lachiqui&quot;,&quot;alcides&quot;);
+//    Seguir_Usuario(&quot;lachiqui&quot;,&quot;el_padrino&quot;);
+//    Seguir_Usuario(&quot;lachiqui&quot;,&quot;scarlettO&quot;);
+//    Seguir_Usuario(&quot;lachiqui&quot;,&quot;ppArgento&quot;);
+//    Seguir_Usuario(&quot;cbochinche&quot;,&quot;la_ley&quot;);
+//    Seguir_Usuario(&quot;cbochinche&quot;,&quot;lospimpi&quot;);
+//    Seguir_Usuario(&quot;cbochinche&quot;,&quot;dyangounchained&quot;);
+//    Seguir_Usuario(&quot;cbochinche&quot;,&quot;alcides&quot;);
+//    Seguir_Usuario(&quot;cbochinche&quot;,&quot;ppArgento&quot;);
+//    Seguir_Usuario(&quot;Eleven11&quot;,&quot;la_ley&quot;);
+//    Seguir_Usuario(&quot;Eleven11&quot;,&quot;el_padrino&quot;);
+//    Seguir_Usuario(&quot;Eleven11&quot;,&quot;scarlettO&quot;);
+//    Seguir_Usuario(&quot;Eleven11&quot;,&quot;ppArgento&quot;);
+//    
+//    
+//    //Preferencias (favoritos)
+//    Album album;
+//    Tema tema;
+//    ListaReproduccion lista;
+//    Cliente cliente;
+//    
+//    //VC-&gt; el_padrino 
+//    //album
+//    album  = getAlbum(&quot;Violator&quot;);
+//    AgregarAlbumFavoritoCliente(&quot;el_padrino&quot;,album);
+//    //cliente = ObtenerCliente(&quot;el_padrino&quot;);
+//    album  = getAlbum(&quot;El Lago De Los Cisnes&quot;);
+//    AgregarAlbumFavoritoCliente(&quot;el_padrino&quot;,album);
+//    album  = getAlbum(&quot;Concierto Para Piano No. 1 En Si Menor, Opus 23&quot;);
+//    AgregarAlbumFavoritoCliente(&quot;el_padrino&quot;,album);
+//
+//    tema = getTema(&quot;El Duelo&quot;);
+//    AgregarTemaFavoritoCliente(&quot;el_padrino&quot;,tema);
+//
+//    lista = getLista(&quot;Noche De La Nostalgia&quot;);
+//    AgregarListaFavoritaCliente(&quot;el_padrino&quot;, lista);
+//    lista = getLista(&quot;Rock En Español&quot;);
+//    AgregarListaFavoritaCliente(&quot;el_padrino&quot;, lista);
+//    
+//    
+//    //scarlettO
+//    lista = getLista(&quot;Música Clásica&quot;);
+//    AgregarListaFavoritaCliente(&quot;scarlettO&quot;, lista);
+//    
+//    //ppArgento
+//    tema = getTema(&quot;Adagio De Mi País&quot;);
+//    AgregarTemaFavoritoCliente(&quot;ppArgento&quot;,tema);
+//    
+//    lista = getLista(&quot;Noche De La Nostalgia&quot;);
+//    AgregarListaFavoritaCliente(&quot;ppArgento&quot;, lista);
+//    lista = getLista(&quot;Rock En Español&quot;);
+//    AgregarListaFavoritaCliente(&quot;ppArgento&quot;, lista);
+//    
+//    //Heisenberg
+//    lista = getLista(&quot;Música Inspiradora&quot;);
+//    AgregarListaFavoritaCliente(&quot;Heisenberg&quot;, lista);
+//    
+//    //benKenobi
+//    album  = getAlbum(&quot;El Lago De Los Cisnes&quot;);
+//    AgregarAlbumFavoritoCliente(&quot;benKenobi&quot;,album);
+//    album  = getAlbum(&quot;Concierto Para Piano No. 1 En Si Menor, Opus 23&quot;);
+//    AgregarAlbumFavoritoCliente(&quot;benKenobi&quot;,album);
+//    
+//    //lachiqui
+//    
+//    //cbochinche
+//    tema = getTema(&quot;Primer Movimiento (Allegro non troppo e molto maestoso – Allegro con spirito)&quot;);
+//    AgregarTemaFavoritoCliente(&quot;cbochinche&quot;,tema);
+//    
+//    lista = getLista(&quot;Noche De La Nostalgia&quot;);
+//    AgregarListaFavoritaCliente(&quot;cbochinche&quot;, lista);
+//    lista = getLista(&quot;Rock En Español&quot;);
+//    AgregarListaFavoritaCliente(&quot;cbochinche&quot;, lista);
+//    
+//    album  = getAlbum(&quot;Hay Amores Que Matan&quot;);
+//    AgregarAlbumFavoritoCliente(&quot;cbochinche&quot;,album);
+//    
+//    //Eleven11
+//    tema = getTema(&quot;No Quiero Estudiar&quot;);
+//    AgregarTemaFavoritoCliente(&quot;Eleven11&quot;,tema);
+    
+    
+<span class="nc" id="L1973">    }</span>
+   
+    public Album getAlbum(String nombreA){
+<span class="fc" id="L1976">        Album album = cpu.obtenerAlbumPorNombre(nombreA);</span>
+<span class="fc" id="L1977">        return album;</span>
+    }
+    
+    public Tema getTema(String nombreT){
+<span class="fc" id="L1981">        Tema tema = cpu.obtenerTemaPorNombre(nombreT);</span>
+<span class="fc" id="L1982">        return tema;</span>
+    }
+    
+    public ListaReproduccion getLista(String nombreL){
+<span class="fc" id="L1986">        ListaReproduccion lista = cpu.obtenerListaPorNombre(nombreL);</span>
+<span class="fc" id="L1987">        return lista;</span>
+    }
+   
+    public boolean Encontrar_Lista_Por_Defecto(String nombre){
+<span class="fc" id="L1991">           List&lt;ListaPorDefecto&gt; listas = cpu.Listar_Listas_Por_Defecto();</span>
+<span class="fc bfc" id="L1992" title="All 2 branches covered.">           for(int i = 0; i &lt; listas.size();i++){</span>
+<span class="fc bfc" id="L1993" title="All 2 branches covered.">               if(listas.get(i).getNombre().equals(nombre)){</span>
+<span class="fc" id="L1994">                   return true;</span>
+               }
+           }
+<span class="fc" id="L1997">           return false;</span>
+    }
+   public boolean Encontrar_Lista_Particular(String nombre_cliente,String nombre_lista){
+<span class="fc" id="L2000">           List&lt;ListaParticular&gt; listas = cpu.Listar_Listas_Particulares();</span>
+<span class="fc bfc" id="L2001" title="All 2 branches covered.">           for(ListaParticular lp:listas){</span>
+<span class="fc bfc" id="L2002" title="All 2 branches covered.">               if(lp.getNombre().equals(nombre_lista)){</span>
+<span class="fc bfc" id="L2003" title="All 2 branches covered.">                   if(lp.getCliente().equals(nombre_cliente)){</span>
+<span class="fc" id="L2004">                       return true;</span>
+                   }
+               }
+<span class="fc" id="L2007">           }</span>
+<span class="fc" id="L2008">           return false;</span>
+    }
+   
+   //consultaalbum
+   
+   public DataAlbum[] getAlbumsByArtista(String artista) throws AlbumNoExisteException {
+<span class="fc" id="L2014">        List&lt;Album&gt; albums = cpu.obtenerAlbumPorArtista(artista);</span>
+<span class="fc bfc" id="L2015" title="All 2 branches covered.">        if (!albums.isEmpty()) {</span>
+<span class="fc" id="L2016">            DataAlbum[] dataAlbums = new DataAlbum[albums.size()];</span>
+<span class="fc bfc" id="L2017" title="All 2 branches covered.">            for (int i = 0; i &lt; albums.size(); i++) {</span>
+<span class="fc" id="L2018">                dataAlbums[i] = albums.get(i).devolverData();</span>
+<span class="fc" id="L2019">                System.out.println(dataAlbums[i]);</span>
+            }
+<span class="fc" id="L2021">            return dataAlbums;</span>
+        } else {
+<span class="fc" id="L2023">            throw new AlbumNoExisteException(&quot;No existen álbumes para el artista seleccionado.&quot;);</span>
+        }
+    }
+   
+    //
+    public void AgregarListaFavoritaCliente(String nickname, ListaReproduccion lista){
+<span class="fc" id="L2029">        Cliente cliente = cpu.obtenerCliente(nickname);</span>
+<span class="fc" id="L2030">        cliente.agregarListaFavorita(lista);</span>
+<span class="fc" id="L2031">        cpu.actualizarUsuario(cliente);  </span>
+<span class="fc" id="L2032">    }</span>
+    
+    public void AgregarAlbumFavoritoCliente(String nickname, Album album){
+<span class="fc" id="L2035">        Cliente cliente = cpu.obtenerCliente(nickname);</span>
+<span class="fc" id="L2036">        cliente.agregarAlbumFavorito(album);</span>
+<span class="fc" id="L2037">        cpu.actualizarUsuario(cliente);   </span>
+<span class="fc" id="L2038">    }</span>
+    
+    public void AgregarTemaFavoritoCliente(String nickname, Tema tema){
+<span class="fc" id="L2041">        Cliente cliente = cpu.obtenerCliente(nickname);</span>
+<span class="fc" id="L2042">        cliente.agregarTemaFavorito(tema);</span>
+<span class="fc" id="L2043">        cpu.actualizarUsuario(cliente);</span>
+<span class="fc" id="L2044">    }</span>
+    
+    // Favoritos / Preferencias / 
+
+}
+
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
